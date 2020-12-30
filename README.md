@@ -20,7 +20,7 @@ Window10/Linux
 ### Installation
 * Anaconda
 * ZeroMQ
-   1. Window
+   1.Window
       ```sh
       conda install -c conda-forge pyzmq
       ```
