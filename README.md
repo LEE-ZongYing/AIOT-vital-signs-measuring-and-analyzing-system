@@ -29,22 +29,22 @@ Window10/Linux
       brew install zmq
       ``` 
    * Linux
-     Fedora
-     ```sh
-      dnf install zeromq-devel
-      ```
-     Ubuntu/Debian/Mint
-      ```sh
-      apt-get install libzmq3-dev
-      ```
-      Arch
-      ```sh
-      pacman -S zeromq
-      ```
-      SUSE
-      ```sh
-      zypper install zeromq-devel
-      ```
+       Fedora
+       ```sh
+        dnf install zeromq-devel
+        ```
+       Ubuntu/Debian/Mint
+        ```sh
+        apt-get install libzmq3-dev
+        ```
+        Arch
+        ```sh
+        pacman -S zeromq
+        ```
+        SUSE
+        ```sh
+        zypper install zeromq-devel
+        ```
 * BlueZ
    ```sh
    sudo apt-get update
