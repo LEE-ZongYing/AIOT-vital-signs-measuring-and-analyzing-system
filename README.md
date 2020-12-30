@@ -9,9 +9,9 @@
 Window10/Linux
 
 ### 需要裝置
-1.window電腦/mac
-2.ZenboJunior
-3.Raspberry Pi3
+1. window電腦/mac
+2. ZenboJunior
+3. Raspberry Pi3
 
 ### Prerequisites
 
@@ -20,11 +20,31 @@ Window10/Linux
 ### Installation
 * Anaconda
 * ZeroMQ
-   1.Window
+   * Window(Anaconda)
       ```sh
       conda install -c conda-forge pyzmq
       ```
-   
+   * OSX
+      ```sh
+      brew install zmq
+      ``` 
+   * Linux
+     Fedora
+     ```sh
+      dnf install zeromq-devel
+      ```
+     Ubuntu/Debian/Mint
+      ```sh
+      apt-get install libzmq3-dev
+      ```
+      Arch
+      ```sh
+      pacman -S zeromq
+      ```
+      SUSE
+      ```sh
+      zypper install zeromq-devel
+      ```
 * BlueZ
    ```sh
    sudo apt-get update
