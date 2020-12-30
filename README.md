@@ -6,10 +6,13 @@
 
 ### Built With
 
-* [ZeroMQ]
+* ZeroMQ
 * BlueZ
    ```sh
    sudo apt-get update
+   ```
+   ```sh
+   sudo apt-get install bluetooth bluez bluez-hcidump
    ```
 
 
