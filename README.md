@@ -6,11 +6,11 @@
 
 ## 系統環境
 
-Window10/Linux
+Windows10/Linux
 
 ## 需要裝置
 1. window電腦/mac
-2. ZenboJunior
+2. Zenbo Junior
 3. Raspberry Pi3
 
 ## 安裝
