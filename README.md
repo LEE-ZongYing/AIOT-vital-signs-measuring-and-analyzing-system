@@ -28,8 +28,8 @@ Window10/Linux
       ```sh
       brew install zmq
       ``` 
-   * Linux
-       Fedora
+   * Linux<br>
+       Fedora</br>
        ```sh
         dnf install zeromq-devel
         ```
