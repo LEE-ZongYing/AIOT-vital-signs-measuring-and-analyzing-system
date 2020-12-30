@@ -58,7 +58,24 @@ This project have the source file of vital signs monitoring system running on a 
     python setup.py install
   ```
 * Django
-
+  * 虛擬環境
+  ```sh
+  python -m bench djangogirls_venv
+  ```
+  * 切換虛擬環境
+  ```sh
+  djangogirls_venv\Scripts\activate
+  ```
+  * 安裝(虛擬環境下)
+  ```sh
+  python -m pip install --upgrade pip
+  ```
+  ```sh
+  pip install django
+  ```
+  ```sh
+  pip install python
+  ```
 * MySQL
 
 ## 使用說明
@@ -69,7 +86,7 @@ python test.py
 1. 執行project/Code/版本一/Zenbo/版本一流程Code.py，連接Zenbo Junior。
 2. 架設Server執行project/Code/版本一/Server/Server.py。
 3. 在Raspberry Pi3中執行project/Code/版本一/Raspberry/test.py，即可接收藍芽的數據。
-4. 最後project/Code/版本一/Django_project/安裝至電腦中即可顯示出網頁。
+4. 要使用Django撰寫網頁需要先架設虛擬環境，
 
 
 
@@ -79,4 +96,5 @@ python test.py
 * [GitHub Pages](https://pages.github.com)
 * [ASUS Zenbo Junior](https://zenbo.asus.com/product/zenbojunior/overview/)
 * [Raspberry Pi 3](https://www.raspberrypi.org/products/raspberry-pi-3-model-b/)
+* [架設 Django 開發環境](https://developer.mozilla.org/zh-TW/docs/Learn/Server-side/Django/development_environment)
 
