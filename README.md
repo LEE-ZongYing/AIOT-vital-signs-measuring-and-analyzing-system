@@ -13,10 +13,6 @@ Window10/Linux
 2. ZenboJunior
 3. Raspberry Pi3
 
-### Prerequisites
-
-
-
 ### Installation
 * Anaconda
 * ZeroMQ
@@ -52,24 +48,6 @@ Window10/Linux
    ```sh
    sudo apt-get install bluetooth bluez bluez-hcidump
    ```
-
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/your_username_/Project-Name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```JS
-   const API_KEY = 'ENTER YOUR API';
-   ```
-
-
-
-<!-- USAGE EXAMPLES -->
 ## Usage
 
 
