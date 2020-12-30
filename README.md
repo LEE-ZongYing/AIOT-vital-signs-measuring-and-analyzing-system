@@ -62,10 +62,6 @@ This project have the source file of vital signs monitoring system running on a 
   ```sh
   python -m bench djangogirls_venv
   ```
-  * 切換虛擬環境
-  ```sh
-  djangogirls_venv\Scripts\activate
-  ```
   * 安裝(虛擬環境下)
   ```sh
   python -m pip install --upgrade pip
@@ -83,12 +79,18 @@ This project have the source file of vital signs monitoring system running on a 
 ```sh
 python test.py
 ```
-1. 執行project/Code/版本一/Zenbo/版本一流程Code.py，連接Zenbo Junior。
-2. 架設Server執行project/Code/版本一/Server/Server.py。
-3. 在Raspberry Pi3中執行project/Code/版本一/Raspberry/test.py，即可接收藍芽的數據。
-4. 要使用Django撰寫網頁需要先架設虛擬環境，
-
-
+* Zenbo Junior
+  1. 執行project/Code/版本一/Zenbo/版本一流程Code.py，連接Zenbo Junior。
+* Server
+  1. 架設Server執行project/Code/版本一/Server/Server.py。
+* Raspberry Pi 3
+  1. 在Raspberry Pi 3中執行project/Code/版本一/Raspberry/test.py，即可接收藍芽的數據。
+* Django
+  1. 要使用Django撰寫網頁需要先架設虛擬環境，架設後使用djangogirls_venv\Scripts\activat切換環境
+  2. 切換後進行安裝
+  3. 進入mysite目錄建立django application(python manage.py startapp project)並建立template目錄
+  4. 建立完成後修改mysite /settings.py中的 TEMPLATES 設定將 'DIRS'【.】修改成 【os.path.join(BASE_DIR,'template').replace('\\','/')】
+  5. 即可輸入程式碼
 
 ## 參考資料
 * [ZeroMQ](https://zeromq.org/download/)
