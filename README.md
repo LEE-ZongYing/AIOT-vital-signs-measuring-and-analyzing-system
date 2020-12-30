@@ -6,8 +6,10 @@
 
 ### Built With
 
-*ZeroMQ
-*BlueZ(`sudo apt-get update`)
+1. ZeroMQ
+2. BlueZ
+   ```sudo apt-get update
+   ```
 
 
 
