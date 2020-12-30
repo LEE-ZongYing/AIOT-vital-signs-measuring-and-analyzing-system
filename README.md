@@ -6,9 +6,10 @@
 
 ### Built With
 
-1. ZeroMQ
-2. BlueZ
-   ```sudo apt-get update
+* [ZeroMQ]
+* BlueZ
+   ```sh
+   sudo apt-get update
    ```
 
 
