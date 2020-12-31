@@ -1,4 +1,4 @@
-# Designing, implementing and testing an IoT based vital signs monitoring system for elderly health care 高齡智慧生理監控系統
+#高齡智慧生理監控系統
 
 
 ## About this project (關於計畫)
