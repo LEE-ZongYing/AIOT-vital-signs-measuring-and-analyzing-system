@@ -105,8 +105,6 @@ python test.py
      * 設定__init__.py檔添加下列兩行
      ```py
      import pymysql
-     ```
-     ```py
      pymysql.install_as_MySQLdb()
      ```
      * 設定database，至專案根目錄(mysite)下的settings.py檔的'default'參數，替換成下方程式碼:
@@ -117,6 +115,25 @@ python test.py
      'PASSWORD': 'your password', # 資料庫密碼
      'HOST': 'localhost', # 主機位置，可以先測本地localhost
      'PORT': '8889', # 設定連接埠
+     ```
+     * 找到base.py，檔案內尋找`version = Database.version_info`修改成下方程式碼
+     ```py
+     version = Database.version_info
+     if version < (1, 3, 13):
+     pass
+     ```
+     * 執行一次連接資料庫指令
+     ```sh
+     python manage.py inspectdb
+     ```
+     * 複製執行後所看到的程式碼內容貼到建立的app專案資料夾中的models.py
+     * 建立migrations資料表
+     ```sh
+     python manage.py makemigrations mysite
+     ```  
+     * migrate同步資料表
+     ```sh
+     python manage.py migrate mysite
      ```
 * MySQL
   1. 建立專屬於Iccard資料庫
