@@ -74,9 +74,11 @@ This project have the source file of vital signs monitoring system running on a 
   pip install python
   ```
   * 進入mysite目錄建立django application
-  `python manage.py startapp project`
-  * 修改mysite /settings.py中的 TEMPLATES 設定將 'DIRS'【.】修改成
   ```sh
+  python manage.py startapp project
+  ```
+  * 修改mysite /settings.py中的 TEMPLATES 設定將 'DIRS'【.】修改成
+  ```py
   【os.path.join(BASE_DIR,'template').replace('\\','/')】
   ```
 * MySQL
@@ -99,9 +101,9 @@ python test.py
   4. 並修改mysite/settings.py中的參數。
   5. 連接你的model.py至MySQL資料庫，即可撰寫網頁。
 * MySQL
-  1.建立專屬於Iccard資料庫
-  2.設定使用者密碼及權限
-  3.建立Iccard資料表儲存使用者各項資料
+  1. 建立專屬於Iccard資料庫
+  2. 設定使用者密碼及權限
+  3. 建立Iccard資料表儲存使用者各項資料
 
 ## 參考資料
 * [ZeroMQ](https://zeromq.org/download/)
