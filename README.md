@@ -73,7 +73,7 @@ This project have the source file of vital signs monitoring system running on a 
   pip install python
   ```
 * MySQL
-
+  [ＭysQl installer](http://dev.mysql.com/downloads/windows/installer/)
 ## 使用說明
 可在VS Code中終端機執行，執行時需輸入如下例子，或是在儲存程式資料夾處，使用command line執行
 ```sh
