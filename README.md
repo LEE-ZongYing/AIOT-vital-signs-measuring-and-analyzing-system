@@ -122,11 +122,10 @@ python test.py
      if version < (1, 3, 13):
      pass
      ```
-     * 執行一次連接資料庫指令
+     * 執行一次連接資料庫指令並複製執行後所看到的程式碼內容貼到建立的app專案資料夾中的models.py
      ```sh
      python manage.py inspectdb
      ```
-     * 複製執行後所看到的程式碼內容貼到建立的app專案資料夾中的models.py
      * 建立migrations資料表
      ```sh
      python manage.py makemigrations mysite
