@@ -102,13 +102,31 @@ python test.py
   【os.path.join(BASE_DIR,'template').replace('\\','/')】
   ```
   7. 連接你的model.py至MySQL資料庫
-     ## 設定__init__.py檔添加下列兩行
+     * 設定__init__.py檔添加下列兩行
      ```py
      import pymysql
      ```
      ```py
      pymysql.install_as_MySQLdb()
      ```
+     * 設定database
+     ```py
+     DATABASES = {
+    'default': {
+        # ========= 將預設的sqlite3 ENGINE 還有 NAME 註解掉 =========
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        
+        # ========= 配置自己的MySQL =========
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'exrate', # 目標資料庫的名稱
+        'USER': 'your account', # 資料庫帳號
+        'PASSWORD': 'your password', # 資料庫密碼
+        'HOST': 'localhost', # 主機位置，可以先測本地localhost
+        'PORT': '8889', # 設定連接埠
+        }
+    }
+    ```
 * MySQL
   1. 建立專屬於Iccard資料庫
   2. 設定使用者密碼及權限
