@@ -102,12 +102,10 @@ python test.py
   【os.path.join(BASE_DIR,'template').replace('\\','/')】
   ```
   7. 連接你的model.py至MySQL資料庫
-     > 設定__init__.py檔添加下列兩行
-     >>
-       ```py
-       import pymysql
-       ```
-     >>
+     ## 設定__init__.py檔添加下列兩行
+     ```py
+     import pymysql
+     ```
      ```py
      pymysql.install_as_MySQLdb()
      ```
