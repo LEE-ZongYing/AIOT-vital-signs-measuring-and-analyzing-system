@@ -15,7 +15,8 @@ This project have the source file of vital signs monitoring system running on a 
 1. Window電腦/Mac for controling network connection and Raspberry Pi  
 2. Zenbo Junior robot  
 3. Raspberry Pi 3 model B+
-
+4. USB讀卡機
+5. 藍芽感測設備(額溫槍、體重計、血壓計)
 ## Installation 安裝
 * VS Code
 * Anaconda
