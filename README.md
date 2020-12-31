@@ -69,14 +69,6 @@ This project have the source file of vital signs monitoring system running on a 
   ```sh
   pip install python
   ```
-  * 進入mysite目錄建立django application
-  ```sh
-  python manage.py startapp project
-  ```
-  * 建立templates目錄
-  ```sh
-  mkdir templates
-  ```
 * MySQL
   * 下載API Key [ＭysQl installer](http://dev.mysql.com/downloads/windows/installer/)
 ## 使用說明
@@ -98,7 +90,7 @@ python test.py
   ```
   3. 使用`djangogirls_venv\Scripts\activat`切換環境
   3. 切換後進行安裝所需軟體。
-  4. * 進入mysite目錄建立django application，並在同個目錄底下再建立templates目錄。
+  4. 進入mysite目錄建立django application，並在同個目錄底下再建立templates目錄。
   ```sh
   python manage.py startapp project
   ```
@@ -109,7 +101,8 @@ python test.py
   ```py
   【os.path.join(BASE_DIR,'template').replace('\\','/')】
   ```
-  5. 連接你的model.py至MySQL資料庫，即可撰寫網頁。
+  6. 連接你的model.py至MySQL資料庫
+     * 設定__init__.py檔
 * MySQL
   1. 建立專屬於Iccard資料庫
   2. 設定使用者密碼及權限
