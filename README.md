@@ -89,20 +89,28 @@ python test.py
   python -m bench djangogirls_venv
   ```
   3. 使用`djangogirls_venv\Scripts\activat`切換環境
-  3. 切換後進行安裝所需軟體。
-  4. 進入mysite目錄建立django application，並在同個目錄底下再建立templates目錄。
+  4. 切換後進行安裝所需軟體。
+  5. 進入mysite目錄建立django application，並在同個目錄底下再建立templates目錄。
   ```sh
   python manage.py startapp project
   ```
   ```sh
   mkdir templates
   ```
-  5. 並修改修改mysite /settings.py中的TEMPLATES 設定將 'DIRS'【.】修改成
+  6. 並修改修改mysite /settings.py中的TEMPLATES 設定將 'DIRS'【.】修改成
   ```py
   【os.path.join(BASE_DIR,'template').replace('\\','/')】
   ```
-  6. 連接你的model.py至MySQL資料庫
-     * 設定__init__.py檔
+  7. 連接你的model.py至MySQL資料庫
+     > 設定__init__.py檔添加下列兩行
+     >>
+       ```py
+       import pymysql
+       ```
+     >>
+     ```py
+     pymysql.install_as_MySQLdb()
+     ```
 * MySQL
   1. 建立專屬於Iccard資料庫
   2. 設定使用者密碼及權限
