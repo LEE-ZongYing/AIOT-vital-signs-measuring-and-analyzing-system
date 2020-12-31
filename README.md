@@ -73,8 +73,14 @@ This project have the source file of vital signs monitoring system running on a 
   ```sh
   pip install python
   ```
+  * 進入mysite目錄建立django application
+  `python manage.py startapp project`
+  * 修改mysite /settings.py中的 TEMPLATES 設定將 'DIRS'【.】修改成
+  ```sh
+  【os.path.join(BASE_DIR,'template').replace('\\','/')】
+  ```
 * MySQL
-  * [ＭysQl installer](http://dev.mysql.com/downloads/windows/installer/)
+  * 下載API Key [ＭysQl installer](http://dev.mysql.com/downloads/windows/installer/)
 ## 使用說明
 可在VS Code中終端機執行，執行時需輸入如下例子，或是在儲存程式資料夾處，使用command line執行
 ```sh
@@ -87,11 +93,15 @@ python test.py
 * Raspberry Pi 3
   1. 在Raspberry Pi 3中執行project/Code/版本一/Raspberry/test.py，即可接收藍芽的數據。
 * Django
-  1. 使用Django撰寫網頁需要先架設虛擬環境，架設後使用`djangogirls_venv\Scripts\activat*`切換環境
-  2. 切換後進行安裝所需軟體
-  3. 進入mysite目錄建立django application(python manage.py startapp project)並建立template目錄
-  4. 建立完成後修改mysite /settings.py中的 TEMPLATES 設定將 'DIRS'【.】修改成 【os.path.join(BASE_DIR,'template').replace('\\','/')】
-  5. 即可輸入程式碼
+  1. 架設虛擬環境，使用`djangogirls_venv\Scripts\activat`切換環境
+  2. 切換後進行安裝所需軟體。
+  3. 並建立mysite目錄(app)，並在同個目錄底下再建立templates目錄。
+  4. 並修改mysite/settings.py中的參數。
+  5. 連接你的model.py至MySQL資料庫，即可撰寫網頁。
+* MySQL
+  1.建立專屬於Iccard資料庫
+  2.設定使用者密碼及權限
+  3.建立Iccard資料表儲存使用者各項資料
 
 ## 參考資料
 * [ZeroMQ](https://zeromq.org/download/)
