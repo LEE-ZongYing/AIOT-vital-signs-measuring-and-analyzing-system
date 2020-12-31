@@ -59,7 +59,8 @@ This project have the source file of vital signs monitoring system running on a 
     python setup.py install
   ```
 * Django
-  * 虛擬環境
+  * 建立資料夾Django_project目錄
+  * 建立虛擬環境
   ```sh
   python -m bench djangogirls_venv
   ```
@@ -77,9 +78,9 @@ This project have the source file of vital signs monitoring system running on a 
   ```sh
   python manage.py startapp project
   ```
-  * 修改mysite /settings.py中的 TEMPLATES 設定將 'DIRS'【.】修改成
-  ```py
-  【os.path.join(BASE_DIR,'template').replace('\\','/')】
+  * 建立templates目錄
+  ```sh
+  mkdir templates
   ```
 * MySQL
   * 下載API Key [ＭysQl installer](http://dev.mysql.com/downloads/windows/installer/)
@@ -98,7 +99,10 @@ python test.py
   1. 架設虛擬環境，使用`djangogirls_venv\Scripts\activat`切換環境
   2. 切換後進行安裝所需軟體。
   3. 並建立mysite目錄(app)，並在同個目錄底下再建立templates目錄。
-  4. 並修改mysite/settings.py中的參數。
+  4. 並修改修改mysite /settings.py中的 TEMPLATES 設定將 'DIRS'【.】修改成
+  ```py
+  【os.path.join(BASE_DIR,'template').replace('\\','/')】
+  ```
   5. 連接你的model.py至MySQL資料庫，即可撰寫網頁。
 * MySQL
   1. 建立專屬於Iccard資料庫
