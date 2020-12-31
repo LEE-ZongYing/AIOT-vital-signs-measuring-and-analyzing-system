@@ -59,11 +59,6 @@ This project have the source file of vital signs monitoring system running on a 
     python setup.py install
   ```
 * Django
-  * 建立資料夾Django_project目錄
-  * 建立虛擬環境
-  ```sh
-  python -m bench djangogirls_venv
-  ```
   * 安裝python和django(虛擬環境下)
   ```sh
   python -m pip install --upgrade pip
@@ -96,10 +91,21 @@ python test.py
 * Raspberry Pi 3
   1. 在Raspberry Pi 3中執行project/Code/版本一/Raspberry/test.py，即可接收藍芽的數據。
 * Django
-  1. 架設虛擬環境，使用`djangogirls_venv\Scripts\activat`切換環境
-  2. 切換後進行安裝所需軟體。
-  3. 並建立mysite目錄(app)，並在同個目錄底下再建立templates目錄。
-  4. 並修改修改mysite /settings.py中的 TEMPLATES 設定將 'DIRS'【.】修改成
+  1. 建立資料夾Django_project目錄
+  2. 建立虛擬環境
+  ```sh
+  python -m bench djangogirls_venv
+  ```
+  3. 使用`djangogirls_venv\Scripts\activat`切換環境
+  3. 切換後進行安裝所需軟體。
+  4. * 進入mysite目錄建立django application，並在同個目錄底下再建立templates目錄。
+  ```sh
+  python manage.py startapp project
+  ```
+  ```sh
+  mkdir templates
+  ```
+  5. 並修改修改mysite /settings.py中的TEMPLATES 設定將 'DIRS'【.】修改成
   ```py
   【os.path.join(BASE_DIR,'template').replace('\\','/')】
   ```
