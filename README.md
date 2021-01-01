@@ -10,7 +10,7 @@ This project have the source file of vital signs monitoring system running on a 
 * Python 3.7.7
 * [pyzenbo 1.0.17](https://zenbo.asus.com/developer/tools/)
 * ZeroMQ 版本....8 
-* [ySQL...8.0.22](https://www.mysql.com/)
+* [MySQL...8.0.22](https://www.mysql.com/)
 ## Requirement(需要裝置)
 1. Window電腦/Mac for controling network connection and Raspberry Pi  
 2. Zenbo Junior robot  
