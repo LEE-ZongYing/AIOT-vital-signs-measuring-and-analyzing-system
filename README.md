@@ -10,7 +10,7 @@ This project have the source file of vital signs monitoring system running on a 
 * Python 3.7.7
 * [pyzenbo 1.0.17](https://zenbo.asus.com/developer/tools/)
 * ZeroMQ 版本....8 
-
+* [ySQL...8.0.22](https://www.mysql.com/)
 ## Requirement(需要裝置)
 1. Window電腦/Mac for controling network connection and Raspberry Pi  
 2. Zenbo Junior robot  
@@ -83,57 +83,7 @@ python test.py
 * Raspberry Pi 3
   1. 在Raspberry Pi 3中執行project/Code/版本一/Raspberry/test.py，即可接收藍芽的數據。
 * Django
-  1. 建立資料夾Django_project目錄
-  2. 建立虛擬環境
-  ```sh
-  python -m bench djangogirls_venv
-  ```
-  3. 使用`djangogirls_venv\Scripts\activat`切換環境
-  4. 切換後進行安裝所需軟體。
-  5. 進入mysite目錄建立django application，並在同個目錄底下再建立templates目錄。
-  ```sh
-  python manage.py startapp project
-  ```
-  ```sh
-  mkdir templates
-  ```
-  6. 並修改修改mysite /settings.py中的TEMPLATES 設定將 'DIRS'【.】修改成
-  ```py
-  【os.path.join(BASE_DIR,'template').replace('\\','/')】
-  ```
-  7. 連接你的model.py至MySQL資料庫
-     * 設定__init__.py檔添加下列兩行
-     ```py
-     import pymysql
-     pymysql.install_as_MySQLdb()
-     ```
-     * 設定database，至專案根目錄(mysite)下的settings.py檔的'default'參數，替換成下方程式碼:
-     ```py
-     'ENGINE': 'django.db.backends.mysql',
-     'NAME': 'exrate', # 目標資料庫的名稱
-     'USER': 'your account', # 資料庫帳號
-     'PASSWORD': 'your password', # 資料庫密碼
-     'HOST': 'localhost', # 主機位置，可以先測本地localhost
-     'PORT': '8889', # 設定連接埠
-     ```
-     * 找到base.py，檔案內尋找`version = Database.version_info`修改成下方程式碼
-     ```py
-     version = Database.version_info
-     if version < (1, 3, 13):
-     pass
-     ```
-     * 執行一次連接資料庫指令並複製執行後所看到的程式碼內容貼到建立的app專案資料夾中的models.py
-     ```sh
-     python manage.py inspectdb
-     ```
-     * 建立migrations資料表
-     ```sh
-     python manage.py makemigrations mysite
-     ```  
-     * migrate同步資料表
-     ```sh
-     python manage.py migrate mysite
-     ```
+  1. 執行`python manage.py runserver`即可跑出網頁
 * MySQL
   1. 建立專屬於Iccard資料庫
   2. 設定使用者密碼及權限
