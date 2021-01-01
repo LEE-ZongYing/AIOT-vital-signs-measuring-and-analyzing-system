@@ -16,7 +16,7 @@ This project have the source file of vital signs monitoring system running on a 
 2. Zenbo Junior robot  
 3. Raspberry Pi 3 model B+
 4. USB讀卡機
-5. 藍芽感測設備(額溫槍、體重計、血壓計)
+5. 藍芽感測設備(額溫槍IR40B、體重計W310、血壓計D40)
 ## Installation 安裝
 * VS Code
 * Anaconda
@@ -52,6 +52,14 @@ This project have the source file of vital signs monitoring system running on a 
    ```
    ```sh
    sudo apt-get install bluetooth bluez bluez-hcidump
+   ```
+* pexpect
+   ```sh
+   sudo apt-get install -y python-pexpect
+   ```
+* pyscard
+   ```sh
+   sudo apt-get install -y python-pyscard
    ```
 * Zenbo Junior
   - navigate to *pyzenbo* folder and install the SDK using
