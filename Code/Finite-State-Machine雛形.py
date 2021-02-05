@@ -15,8 +15,6 @@ class MeasureEvent(object):
         self.temperature=False
         self.weight=False
         self.pressure=False
-
-
         self.state=""
         self.fsm=None
     def bind(self,state,fsm):#bind state
@@ -67,26 +65,40 @@ class StateMachine(object):
         self.states={0:InitialState(),8:OnlyCard(),9:CPM(),10:CWM(),11:CWPM(),12:CTM(),13:CTPM(),14:CTWM(),15:FINISH()}
     def getFsm(self,state):#從此處拿狀態機
         return self.states[state]
-    def changeState(self,Newstate):
+    def changeState(self, NewState, objs):
+        for obj in objs:
+            #   如果新產生的訊號和物件原本的執行狀態對應的訊號一致的話
+            if NewState == obj.state:
+                #   保持原狀態
+                fsm = self.getFsm(obj.state)
+                fsm.exec(obj)
+            else:
+                #   先退出舊狀態
+                old_fsm = self.getFsm(obj.state)
+                old_fsm.exit(obj)
+                #   執行新狀態
+                obj.state = NewState
+                new_fsm = self.getFsm(NewState)
+                new_fsm.exec(obj)
+
+def run(l,sm):
+    #measure=[]
+    while
+        data=context.recv()
+        l=CheckDevice(data,l)#send data and know who they were
+        sm.changeState(l.AttributeToNumber,sm.getFsm(l.AttributeToNumber))
         
-            
-
-    
-
-
-def run(l):
-    sm=StateMachine()
-    measure=[]
-    data=context.recv()
-    l=CheckDevice(data,l)
-    l.bind(l.AttributeToNumber,sm.getFsm(l.AttributeToNumber))
-    measure.append(l)
+        
+        
+    #measure.append(l)
 
 while True:
     data=context.recv()#少編碼
     l=CheckCard(data)
-    while l.card==True:#means card input,此時l state = only card other are 0 
-        run(l)
+    while l.card==True:#means card input,此時l state = only card other are 0
+        sm=StateMachine()
+        l.bind(l.AttributeToNumber,sm.getFsm(l.AttributeToNumber))
+        run(l,sm)
 
 
 def CheckDevice(String,l):
