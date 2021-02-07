@@ -139,6 +139,7 @@ def CheckCard(String):
         pass
         #Zenbo會說請先插入健保卡在量測喔，不然我不知道你是誰^^
         #return 
+        #send signal to zenbo 
 def CheckDevice(String,l):
     global counter
     length=len(String)
