@@ -7,7 +7,7 @@ recvive.connect("tcp://192.168.0.106:5554")
 
 sender = context.socket(zmq.PUSH)
 sender.connect("tcp://192.168.0.106:5556")
-
+#送資料格式(ATN,葉韋均均君,MM/FF）
 counter = 100
 class MeasureEvent(object):
     def __init__(self, ):
@@ -22,10 +22,12 @@ class MeasureEvent(object):
         self.fsm=fsm
     def OnlyCard(self):
         #zenbo say 你好....先生/小姊，健保卡資料以讀取，請前往量測生理指標
+        #send
     def InitialState(self):
         #人臉辨識
+        #send
     def CPM(self):
-        #量其他工具
+        #send
     def CTM(self):
         print('other')
     def FINISH(self):#全部量測+卡完成
@@ -43,51 +45,62 @@ class MeasureEvent(object):
         return number
 
 class State(object):#全0時初始狀態
-    def NoticeRobot(self,):
-        pass
+    def exec(self,):
+        obj1.InitialState()#寫告訴機器人做什麼事情
     def exit(self):
         pass
-
-
-class CTM(State):
-    def NoticeRobot(self,obj1):
+class OnlyCard(object):
+    def exec(self,):
+        obj1.InitialState()
+    def exit(self):
+        pass
+class CPM(state):
+    def exec(self,):
+        obj1.CPM()
+    def exit(self):
+        pass
+class CWM(object):
+    def exec(self,):
+        obj1.CWM()
+    def exit(self):
+        pass
+class CTM(object):
+    def exec(self,):
         obj1.CTM()
-    # @property
-    # def s(self, )
-    
-    # def get_value(self,)
-
-    # def send(self, unit):
-    #     pass
+    def exit(self):
+        pass
     
 class StateMachine(object):
     def __init__(self):#對應數字:各式狀態
         self.states={0:InitialState(),8:OnlyCard(),9:CPM(),10:CWM(),11:CWPM(),12:CTM(),13:CTPM(),14:CTWM(),15:FINISH()}
     def getFsm(self,state):#從此處拿狀態機
         return self.states[state]
-    def changeState(self, NewState, objs):
-        for obj in objs:
+    def changeState(self, NewState, obj1):
             #   如果新產生的訊號和物件原本的執行狀態對應的訊號一致的話
-            if NewState == obj.state:
+            print('目前狀態為： {}'.format(obj1.state))
+            if NewState == obj1.state:
                 #   保持原狀態
-                fsm = self.getFsm(obj.state)
-                fsm.exec(obj)
+                fsm = self.getFsm(obj1.state)
+                fsm.exec(obj1)
             else:
                 #   先退出舊狀態
-                old_fsm = self.getFsm(obj.state)
-                old_fsm.exit(obj)
+                old_fsm = self.getFsm(obj1.state)
+                old_fsm.exit(obj1)
                 #   執行新狀態
-                obj.state = NewState
+                obj1.state = NewState
                 new_fsm = self.getFsm(NewState)
-                new_fsm.exec(obj)
-
+                new_fsm.exec(obj1)
+                if 15 == obj1.state:
+                    return
+                
+                
 def run(l,sm):
     #measure=[]
     while
         data=context.recv()
         l=CheckDevice(data,l)#send data and know who they were
-        sm.changeState(l.AttributeToNumber,sm.getFsm(l.AttributeToNumber))
-        
+        sm.changeState(l.AttributeToNumber,l)
+        return
         
         
     #measure.append(l)
@@ -95,11 +108,16 @@ def run(l,sm):
 while True:
     data=context.recv()#少編碼
     l=CheckCard(data)
+    sm=StateMachine()
+    while l.card==False:
+        #00~07的狀態
+        #send signal to zenbo for face recognization
+        #收到yes ＝ break
+        break
     while l.card==True:#means card input,此時l state = only card other are 0
-        sm=StateMachine()
         l.bind(l.AttributeToNumber,sm.getFsm(l.AttributeToNumber))
         run(l,sm)
-
+        break
 
 def CheckDevice(String,l):
     global counter
@@ -150,6 +168,8 @@ def CheckCard(String):
         obj1.card=True
         return obj1
     else:
-        pass
+        obj1=MeasureEvent()#為一種狀態
+        obj1.card=False
+        return obj1
         #Zenbo會說請先插入健保卡在量測喔，不然我不知道你是誰^^
         #return 
