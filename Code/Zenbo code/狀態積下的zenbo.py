@@ -106,6 +106,7 @@ class Switcher(object):#state switcher
             sdk.robot.set_expression(RobotFace.DEFAULT,'您好，我是您的健康監控小幫手Zenbo，對健康有疑問都能夠來找我喔',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
             #被直接詢問專業知識
             pusher.send_string("yes")
+        return
     def number_8(self):#onlyCard
         #ask measure or check web語音辨識
         say_hello_and_ask(self)#->問候後會自己聽
@@ -113,10 +114,10 @@ class Switcher(object):#state switcher
         if is_get_listening:
             print('有人要量測數據')
             event_listen.clear()
-            event_vision.clear()
         elif is_get_listening==0:
             print('不用謝謝or沒人or叫出網頁or沒有語音辨識到，但有卡片')
         pusher.send_string("yes")
+        return
         # print('counter = {} '.format(counter))
     def number_9(self):#Card+pressure
         recommandation[self.ATN]=''
@@ -138,6 +139,7 @@ class Switcher(object):#state switcher
         }
         recommandation+='請繼續量測體溫、體重以便讓Zenbo Junior繼續替您做更詳細的健康分析哦'
         print(recommandation[counter])
+        return
     def number_12(self):#Card+temperature
         recommandation[self.ATN]=''
         greeting[self.ATN]='以偵測到體溫訊號，目前體溫為'+str(self.MeasureValue)+'度,請繼續量測體重、血壓以便讓AI替您做健康分析唷'
@@ -148,11 +150,13 @@ class Switcher(object):#state switcher
             if RealNumber>37.0:
                 recommandation[self.ATN]='體溫稍高，若有運動、跑跳皆為正常現象，想再次確認體溫，歡迎過1至2分鐘後，再次回來做量測'
         print(recommandation[self.ATN])#CheckPoint
+        return
     def number_10(self):#Card+weight
         recommandation[self.ATN]='以偵測到體重訊號，目前體重為'+self.MeasureValue+'公斤,請繼續量測體溫、血壓，以便讓AI替您做健康分析唷'
         recommandation[self.ATN]+='能提供Zenbo您的身高嗎? Zenbo能依照身高、體重來建議您如何維持健康哦'
         #如何讓user提供身高
         print(recommandation[self.ATN])
+        return
     #-------------------1 phase and 2 phase 分隔線
     def number_11(self):#Card Weight Pressure
         #使用者至第二步，故想查看整體述職的分析結果，說出數值並請使用者測量完。
@@ -171,11 +175,12 @@ class Switcher(object):#state switcher
         #Zenbo : 這邊是您此次量測數值的紀錄，想查看歷史量測資料皆可以以手機掃描下方QRcode，by the way 每次AI數值分析建議、結果也會一併放置在網頁上喔。
 class number_0(object):#全0時初始狀態
     def __init__(self,obj1):
-        obj1.method
+        obj1.number_0
     def exit(self):
 class number_8(number_0):#全0時初始狀態
     def __init__(self,obj1):
-        obj1.method
+        obj1.number_8
+        return
     def exit(self):
 class number_9(number_8):#全0時初始狀態
     def __init__(self,obj1):
@@ -193,13 +198,10 @@ class number_0(object):#全0時初始狀態
     def __init__(self,obj1):
         obj1.method
     def exit(self):
-    # @property
-    # def s(self, )
-    
-    # def get_value(self,)
-
-    # def send(self, unit):
-    #     pass
+        pass
+class CTM(number_0):
+    def __init__(self,obj1):
+        obj1.CTM()
 class number_0(object):#全0時初始狀態
     def __init__(self,obj1):
         obj1.method
@@ -216,20 +218,30 @@ class number_0(object):#全0時初始狀態
 
 def run():
     RawData=socket.recv().decode('utf-8')
-    Case=Switcher((lambda x:x[0:2])(RawData),(lambda x:x[2:len(x)-2])(RawData),(lambda x:x[len(x)-2:len(x)])(RawData))
-    print(Case)#CheckPoint
-    cas.exec()
-    Is_Card_Input=event_cardinput.wait(timeout)
-    CardThread=threading.Thread(target=voice)
-    CardThread.start()
-    CardThread.join()
+    Case=Switcher((lambda x:x[0:2])(RawData),(lambda x:x[2:len(x)-2])(RawData),(lambda x:x[len(x)-2:len(x)])(RawData))#改成用,分隔數值會比較好找
+    
     pusher.send_string("yes")
     print('counter = {} '.format(counter))
 
 class StateManager(object):
-    def ChangeState(self,NewATN,obj)
-        if NewATN == obj.ATN:
-            self.method=
+    def changeState(self, NewState, objs):
+        for obj in objs:
+            #   如果新產生的訊號和物件原本的執行狀態對應的訊號一致的話
+            print('目前狀態為： {}'.format(obj1.state))
+            if NewState == obj.state:
+                #   保持原狀態
+                fsm = self.getFsm(obj.state)
+                fsm.exec(obj)
+            else:
+                #   先退出舊狀態
+                old_fsm = self.getFsm(obj.state)
+                old_fsm.exit(obj)
+                #   執行新狀態
+                obj.state = NewState
+                new_fsm = self.getFsm(NewState)
+                new_fsm.exec(obj)
+                if 15 == obj1.state:
+                    return
 
 
 try:
