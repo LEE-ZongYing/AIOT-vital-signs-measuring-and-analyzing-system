@@ -22,7 +22,8 @@ class MeasureEvent(object):
         self.fsm=fsm
     def OnlyCard(self):
         #zenbo say 你好....先生/小姊，健保卡資料以讀取，請前往量測生理指標
-        #send
+        #send(self.AttributeToNumber,)
+        
     def InitialState(self):
         #人臉辨識
         #send
@@ -30,7 +31,7 @@ class MeasureEvent(object):
         #send
     def CTM(self):
         print('other')
-    def FINISH(self):#全部量測+卡完成
+    def EndState(self):#全部量測+卡完成
         #Call PI存資料
     def AttributeToNumber(self):
         number=0
@@ -51,7 +52,7 @@ class State(object):#全0時初始狀態
         pass
 class OnlyCard(object):
     def exec(self,):
-        obj1.InitialState()
+        obj1.InitialState(self)
     def exit(self):
         pass
 class CPM(state):
@@ -69,6 +70,7 @@ class CTM(object):
         obj1.CTM()
     def exit(self):
         pass
+# 2type and finish
     
 class StateMachine(object):
     def __init__(self):#對應數字:各式狀態
@@ -99,8 +101,11 @@ def run(l,sm):
     while
         data=context.recv()
         l=CheckDevice(data,l)#send data and know who they were
+        l.bind(l.AttributeToNumber,sm.getFsm(l.AttributeToNumber))
         sm.changeState(l.AttributeToNumber,l)
-        return
+        if l.AttributeToNumber==15:
+            break
+    return
         
         
     #measure.append(l)
@@ -116,8 +121,10 @@ while True:
         break
     while l.card==True:#means card input,此時l state = only card other are 0
         l.bind(l.AttributeToNumber,sm.getFsm(l.AttributeToNumber))
+        sm.changeState(l.AttributeToNumber,l)
         run(l,sm)
         break
+    print('完成一趟')
 
 def CheckDevice(String,l):
     global counter
