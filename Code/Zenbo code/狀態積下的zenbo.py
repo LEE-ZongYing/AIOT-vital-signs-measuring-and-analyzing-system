@@ -6,32 +6,24 @@ import zmq
 import time
 
 # setting 
-zenbo_speakSpeed = 100
+zenbo_speakSpeed = 80
 zenbo_speakPitch = 100
 zenbo_speakLanguage = 150
-host = '192.168.0.4'
+host = '192.168.0.5'
 sdk = pyzenbo.connect(host)
 domain = 'E7AABB554ACB414C9AB9BF45E7FA8AD9'
-timeout = 15
-is_looping = True
+timeout = 30
+# is_looping = True
 greeting={}
 recommandation={}#0:'請問是要量測數據還是想查看網頁呢'
-counter=0
 #connection with server
-context=zmq.Context()
-socket=context.socket(zmq.PULL)
-socket.bind("tcp://192.168.0.3:5556")
-pusher = context.socket(zmq.PUSH)
-pusher.bind("tcp://192.168.0.3:5557")
+# context=zmq.Context()
+# socket=context.socket(zmq.PULL)
+# socket.bind("tcp://192.168.0.3:5556")
+# pusher = context.socket(zmq.PUSH)
+# pusher.bind("tcp://192.168.0.3:5557")
 
-event_cardinput=threading.Event()
-event_vision = threading.Event()
-event_listen = threading.Event()
-sdk.on_state_change_callback = on_state_change
-sdk.on_result_callback = on_result
-sdk.on_vision_callback = on_vision
-sdk.robot.register_listen_callback(domain, listen_callback)
-sdk.robot.set_expression(RobotFace.HIDEFACE, timeout=5)
+
 
     
 def on_state_change(serial, cmd, error, state):#Called when command state change in waiting queue
@@ -63,17 +55,53 @@ def listen_callback(args):
         if not event_listen.isSet():
             event_listen.set()
             #此時使用者會插入健保卡、State become CardOnly from initialState
+        return
+    if slu and '量測資料'==str(slu.get('app_semantic').get('originalSentence')) :
+        print(slu)
+        def job():
+            sdk.robot.set_expression(RobotFace.HAPPY)
+            sdk.robot.set_expression(RobotFace.DEFAULT,'好的，那請您前往量測儀器進行測量哦', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} , sync = True)
+        t = threading.Thread(target=job)
+        t.start()
+        if not event_listen.isSet():
+            event_listen.set()
+            #此時使用者會插入健保卡、State become CardOnly from initialState
+        return
     elif slu and '查看資料'==str(slu.get('app_semantic').get('originalSentence')) :
         print(slu)
         def job():
             sdk.robot.set_expression(RobotFace.HAPPY)
             sdk.robot.set_expression(RobotFace.DEFAULT,'這是您的QRCode', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} , sync = True)
-            zenbo.media.play_media('', 'IMG_20201025_193919.jpg', sync=True,timeout=100)#
+            sdk.media.play_media('', 'IMG_20201025_193919.jpg', sync=True,timeout=timeout)#
+            time.sleep(5)
+            return
         t = threading.Thread(target=job)
         t.start()
         t.join()
-
-
+        return
+    elif slu and '看歷史資料'==str(slu.get('app_semantic').get('originalSentence')) :
+        print(slu)
+        def job():
+            sdk.robot.set_expression(RobotFace.HAPPY)
+            sdk.robot.set_expression(RobotFace.DEFAULT,'這是您的QRCode', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} , sync = True)
+            sdk.media.play_media('','IMG_20201025_193919.jpg', sync=True,timeout=timeout)#
+            time.sleep(5)
+        t = threading.Thread(target=job)
+        t.start()
+        t.join()
+        return
+    elif slu and '歷史資料'==str(slu.get('app_semantic').get('originalSentence')) :
+        print(slu)
+        def job():
+            sdk.robot.set_expression(RobotFace.HAPPY)
+            sdk.robot.set_expression(RobotFace.DEFAULT,'這是您的QRCode', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} , sync = True)
+            zenbo.media.play_media('', 'IMG_20201025_193919.jpg', sync=True,timeout=timeout)
+            time.sleep(5)#
+        t = threading.Thread(target=job)
+        t.start()
+        t.join()
+        return
+    return
 def say_hello_and_ask(self):
     print('say_hello_and_ask')
     sdk.robot.set_expression(RobotFace.HAPPY, timeout=5)
@@ -96,23 +124,29 @@ def not_found():
     #sdk.robot.set_expression(RobotFace.DEFAULT, 'Hello,我是Zenbo照護機器人,能夠檢測您目前的健康狀況哦', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} , sync = True)
     sdk.robot.set_expression(RobotFace.TIRED, timeout=5)
 
+
 class Switcher(object):#state switcher 
     def __init__(self,ATN,MeasureValue,unit):
-        self.method_name='number_'+str(ATN)
-        self.method=self.getattr(self, method_name,'NO')
-        self.ATN=ATN
+        self.state={0:number_0(),8:number_8(),9:number_9(),10:number_10(),11:number_11(),12:number_12(),13:number_13(),14:number_14(),15:number_15()}
+        self.ATN=int(ATN)
         self.MeasureValue=MeasureValue
         self.unit=unit
-        return self.method_name
     def number_0(self):#初始狀態，無限開啟人臉辨識就打招呼
-        result = sdk.vision.request_detect_face(enable_debug_preview=True, timeout=50)
+        if event_vision.isSet():
+            event_vision.clear()
+        result = sdk.vision.request_detect_face(enable_debug_preview=True, timeout=15)
         print(result)
         is_detect_face = event_vision.wait(timeout)
         sdk.vision.cancel_detect_face()
+        print(is_detect_face)
         if is_detect_face:
             sdk.robot.set_expression(RobotFace.DEFAULT,'您好，我是您的健康監控小幫手Zenbo，對健康有疑問都能夠來找我喔',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
+        else:
+            print('沒有人臉')
+            sdk.robot.set_expression(RobotFace.DEFAULT,'hello,我是互動機器人Zenbo，能夠與您交朋友並提供關於健康知識哦',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
+
             #被直接詢問專業知識
-   #     pusher.send_string("yes")
+#     pusher.send_string("yes")
         return
     def number_8(self):#onlyCard
         say_hello_and_ask(self)#->問候後會自己聽
@@ -123,163 +157,188 @@ class Switcher(object):#state switcher
         else:
             print('不用謝謝or沒人or叫出網頁or沒有語音辨識到，但有卡片')
     #    pusher.send_string("yes")
-        return 'Yes'
+        return
     def number_9(self):#Card+pressure
         MessureValueArray=self.MeasureValue.split(',')
-        global recommandation[self.ATN]=''
-        greeting[self.ATN]='以偵測到血壓訊號，目前收縮壓為'+MessureValueArray[0]+'mmhg、擴張壓為'+MessureValueArray[1]+'mmhg'+'心跳每分鐘'+MessureValueArray[2]+'下'
-        SPH=True if systolicBP>140 else False
-        DPH=True if DiastolicBP>90 else False
-        if SPH==False:
-            if DPH:
-                recommandation[self.ATN]='目前舒張壓偏高喔，若有任何問題歡迎在量測一次，建議能左右手血壓各量測一次，分析結果會更為準確喔'
-            else:
-                {
-                    recommandation[self.ATN]='恭喜你還非常的健康喔，保持目前的生活作息，能使你更有活力喔。'
-                }
-        else:{
-            if DPH:
-                recommandation[self.ATN]='收縮血壓、擴張血壓數據偏高，勞煩您近期多注意自己的身體，若出現頭暈、噁心、嘔吐現象請馬上前往醫院進行檢查'
-        }
-        recommandation+='請繼續量測體溫、體重以便讓Zenbo Junior繼續替您做更詳細的健康分析哦'
-        print(recommandation[counter])
+        global recommandation
+        greeting[self.ATN]='以偵測到血壓訊號，目前收縮壓為'+MessureValueArray[0]+'mmhg、擴張壓為'+MessureValueArray[1]+'mmhg'+'而心跳每分鐘為'+MessureValueArray[2]+'下'
+        self.BloodPressure(MessureValueArray[0],MessureValueArray[1],MessureValueArray[2])
         sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN]+recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
- #       pusher.send_string("yes")
-        return 'Yes'
+#       pusher.send_string("yes")
+        return 
     def number_12(self):#Card+temperature
-        RealNumber=double(self.MeasureValue)
         recommandation[self.ATN]=''
-        greeting[self.ATN]='以偵測到體溫訊號，目前體溫為'+str(self.MeasureValue)+'度,請繼續量測體重、血壓以便讓AI替您做健康分析唷'
-        flag = True if RealNumber>38.0 else False :
-        if flag:
-            recommandation[self.ATN]='您的體溫過高瞜，為了您以及Zenbo的健康請一同戴上口罩八，此外如果身體有任何不適請盡速前往醫院'
-        else:
-            if RealNumber>37.0:
-                recommandation[self.ATN]='體溫稍高，若有運動、跑跳皆為正常現象，想再次確認體溫，歡迎過1至2分鐘後，再次回來做量測'
+        greeting[self.ATN]='以偵測到體溫訊號，目前體溫為'+str(self.MeasureValue)+'度'
+        self.ThermoSignal(self.MeasureValue)
+        if float(self.MeasureValue)<38.0:
+            recommandation[self.ATN]+='請繼續量測體重、血壓，以便讓Zenbo替您做健康分析唷'
         sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN]+recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
         print(recommandation[self.ATN])
-  #      pusher.send_string("yes")
+#      pusher.send_string("yes")
         return
     def number_10(self):#Card+weight
-        
-        recommandation[self.ATN]='以偵測到體重訊號，目前體重為'+str(self.MeasureValue)+'公斤,請繼續量測體溫、血壓，以便讓AI替您做健康分析唷'
-        recommandation[self.ATN]+='能提供Zenbo您的身高嗎? Zenbo能依照身高、體重來建議您如何維持健康哦'
+        greeting[self.ATN]='以偵測到體重訊號，目前體重為'+str(self.MeasureValue)+'公斤'
+        #recommandation[self.ATN]+='能提供Zenbo您的身高嗎? Zenbo能依照身高、體重來建議您如何維持健康哦'
         #如何讓user提供身高
-        sdk.robot.set_expression(RobotFace.DEFAULT,recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
+        recommandation[self.ATN]+='請繼續量測體溫、血壓，以便讓AI替您做健康分析唷'
+        sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN]+recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
         print(recommandation[self.ATN])
- #       pusher.send_string("yes")
-        return'Yes'
+        return
     #-------------------1 phase and 2 phase 分隔線
     def number_11(self):#Card Weight Pressure
         #使用者至第二步，故想查看整體述職的分析結果，說出數值並請使用者測量完。
-        flag=1 if self.unit='kg' else =0
+        flag=1 if self.unit=='kg' else 0
+        Device=['血壓計','體重計']
+        greeting[self.ATN]='以偵測到'+Device[flag]+'訊號'
         if flag:
-            recommandation[self.ATN]='以量測到體重計訊號，數值為:'+str(self.ATN)+'請前往量測下一生理指標。'
+            greeting[self.ATN]='以偵測到體重訊號，目前體重為'+str(self.MeasureValue)+'公斤'
+            #recommandation[self.ATN]+='能提供Zenbo您的身高嗎? Zenbo能依照身高、體重來建議您如何維持健康哦'
+            #如何讓user提供身高
+            recommandation[self.ATN]='請繼續量測體溫'
         else:
-            recommandation[self.ATN]='以量測到血壓計訊號，數值為:'+str(self.ATN)+'請前往量測下一生理指標。'
-        sdk.robot.set_expression(RobotFace.DEFAULT,recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
+            MessureValueArray=self.MeasureValue.split(',')
+            greeting[self.ATN]='以偵測到血壓訊號，目前收縮壓為'+MessureValueArray[0]+'mmhg、擴張壓為'+MessureValueArray[1]+'mmhg'+'心跳每分鐘'+MessureValueArray[2]+'下'
+            self.BloodPressure(MessureValueArray[0],MessureValueArray[1],MessureValueArray[2])
+        sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN]+recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
         print(recommandation[self.ATN])
-  #      pusher.send_string("yes")
-        return'Yes'
-    def ChangeState(self,NewATN)
-        if NewATN == self.ATN:
-            self.method_name='number_'+str(ATN)
-            self.method=self.getattr(self, method_name,'NO')
+#      pusher.send_string("yes")
+        return
     def number_13(self):# Card Temperature + Pressure
-        flag=1 if self.unit='hg' else =0
+        flag=1 if self.unit=='.C' else 0
+        Device=['血壓計','額溫槍']
+        greeting[self.ATN]='以偵測到'+Device[flag]+'訊號'
         if flag:
-            recommandation[self.ATN]='以量測到血壓計訊號，數值為:'+str(self.ATN)+'請前往量測下一生理指標。'
+            self.ThermoSignal(self.MeasureValue)
+            if float(self.MeasureValue)<=38.0:
+                recommandation[self.ATN]+='請繼續量測體重'
         else:
-            recommandation[self.ATN]='以量測到額溫槍訊號，數值為:'+str(self.ATN)+'請前往量測下一生理指標。'
-        sdk.robot.set_expression(RobotFace.DEFAULT,recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
+            MessureValueArray=self.MeasureValue.split(',')
+            greeting[self.ATN]='以偵測到血壓訊號，目前收縮壓為'+MessureValueArray[0]+'mmhg、擴張壓為'+MessureValueArray[1]+'mmhg'+'而心跳每分鐘為'+MessureValueArray[2]+'下'
+            self.BloodPressure(MessureValueArray[0],MessureValueArray[1],MessureValueArray[2])
+        sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN]+recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
         print(recommandation[self.ATN])
-        return'Yes'
+        return
     def number_14(self):# Card Temperature +Weight
-        flag=1 if self.unit='kg' else =0
+        flag=1 if self.unit=='kg' else 0
+        Device=['額溫槍','體重計']
+        greeting[self.ATN]='以偵測到'+Device[flag]+'訊號'
         if flag:
-            recommandation[self.ATN]='以量測到體重計訊號，數值為:'+str(self.ATN)+'請前往量測下一生理指標。'
+            recommandation[self.ATN]='數值為:'+str(self.MeasureValue)+'公斤,請前往量測血壓及心跳'
         else:
-            recommandation[self.ATN]='以量測到額溫槍訊號，數值為:'+str(self.ATN)+'請前往量測下一生理指標。'
-        sdk.robot.set_expression(RobotFace.DEFAULT,recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
-        print(recommandation[self.ATN])
-     #   pusher.send_string("yes")
-        return'Yes'
+            self.ThermoSignal(self.MeasureValue)
+            if float(self.MeasureValue)<38.0:
+                recommandation[self.ATN]+='請繼續量測血壓'
+        sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN]+recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
+        print(greeting[self.ATN])
+    #   pusher.send_string("yes")
+        return
     def number_15(self):
         greeting[self.ATN]='生理指標量測完畢'
         recommandation[self.ATN]='這邊是您此次量測數值的紀錄，想查看歷史量測資料皆可以以手機掃描下方QRcode，by the way 每次AI分析數據、結果也會一併放置在網頁上'
         zenbo.media.play_media('', 'IMG_20201025_193919.jpg', sync=True,timeout=100)#
-  #      pusher.send_string("yes")
-        return'Yes'
+#      pusher.send_string("yes")
+        return
         #秀出網頁+QRcode
         #Zenbo : 。
+    #def WeightSignal(self,Weight):
+        
+    def BloodPressure(self,SystolicPressure,DiastolicPressure,Beats):
+        SPH=True if int(SystolicPressure)>140 else False
+        DPH=True if int(DiastolicPressure)>90 else False
+        if SPH==False:
+            if DPH:
+                recommandation[self.ATN]='目前舒張壓偏高喔，若有任何問題歡迎在量測一次，建議能左右手血壓各量測一次，分析結果會更為準確喔'
+            else:
+                recommandation[self.ATN]='恭喜你還非常的健康喔，保持目前的生活作息，能使你更有活力喔。'
+        else:
+            if DPH:
+                recommandation[self.ATN]='收縮血壓、擴張血壓數據偏高，勞煩您近期多注意自己的身體，若出現頭暈、噁心、嘔吐現象請馬上前往醫院進行檢查'
+        #recommandation[self.ATN]+='請繼續量測體溫、體重以便讓Zenbo Junior繼續替您做更詳細的健康分析哦'
+        print(recommandation[self.ATN])
+        return
+    def ThermoSignal(self,BodyTemp):
+        if float(BodyTemp)>38.0:
+            recommandation[self.ATN]='您的體溫過高瞜，為了您及Zenbo的健康請一同戴上口罩八，此外，若身體有任何不適請盡速前往醫院'
+        elif float(BodyTemp)>=37.0:
+                recommandation[self.ATN]='體溫稍高，若有運動、跑跳皆為正常現象'
+        else:
+            recommandation[self.ATN]='恭喜您目前體溫還在正常範圍內'
+        return
 class number_0(object):
-    def __init__(self,obj1):
-        obj1.number_0
-    def exit(self):
-class number_8(number_0):
-    def __init__(self,obj1):
-        obj1.number_8
+    def exec(self,obj1):
+        obj1.number_0()
         return
     def exit(self):
+        pass
+class number_8(number_0):
+    def exec(self,obj1):
+        obj1.number_8()        
+        return
+    def exit(self):
+        pass
 class number_9(number_8):
-    def __init__(self,obj1):
-        obj1.method
+    def exec(self,obj1):
+        print('start')
+        obj1.number_9()
+        return
     def exit(self):
+        pass
 class number_12(object):
-    def __init__(self,obj1):
-        obj1.method
+    def exec(self,obj1):
+        obj1.number_12()
+        return
     def exit(self):
+        pass
 class number_10(object):
-    def __init__(self,obj1):
-        obj1.method
-    def exit(self):          
+    def exec(self,obj1):
+        obj1.number_10()
+        return
+    def exit(self):   
+        pass
 class number_11(object):
-    def __init__(self,obj1):
-        obj1.method
+    def exec(self,obj1):
+        obj1.number_11()
+        return
     def exit(self):
         pass
 class number_13(number_0):
-    def __init__(self,obj1):
-        obj1.CTM()
+    def exec(self,obj1):
+        obj1.number_13()
+        return
 class number_14(object):
-    def __init__(self,obj1):
-        obj1.method
-    def exit(self):    
-class number_15(object):
-    def __init__(self,obj1):
-        obj1.method
+    def exec(self,obj1):
+        obj1.number_14()
+        return
     def exit(self):
-
-
-def run():
-    RawData=socket.recv().decode('utf-8')
-    sm=StateManager()
-    
+        pass    
+class number_15(object):
+    def exec(self,obj1):
+        obj1.number_15()
+        return
+    def exit(self):
+        pass
+def run(RawData):
+    #socket.recv().decode('utf-8')
     Case=Switcher((lambda x:x[0:2])(RawData),(lambda x:x[2:len(x)-2])(RawData),(lambda x:x[len(x)-2:len(x)])(RawData))#改成用,分隔數值會比較好找
-    print(Case)
-    pusher.send_string("yes")
-class StateManager(object):
-    def changeState(self, NewState, objs):
-        for obj in objs:
-            #   如果新產生的訊號和物件原本的執行狀態對應的訊號一致的話
-            print('目前狀態為： {}'.format(obj1.state))
-            if NewState == obj.state:
-                #   保持原狀態
-                fsm = self.getFsm(obj.state)
-                fsm.exec(obj)
-            else:
-                #   先退出舊狀態
-                old_fsm = self.getFsm(obj.state)
-                old_fsm.exit(obj)
-                #   執行新狀態
-                obj.state = NewState
-                new_fsm = self.getFsm(NewState)
-                new_fsm.exec(obj)
-                if 15 == obj1.state:
-                    return
+    fsm=Case.state[Case.ATN]
+    fsm.exec(Case)
+    print(RawData,Case)
+    return
+
+event_cardinput=threading.Event()
+event_vision = threading.Event()
+event_listen = threading.Event()
+sdk.on_state_change_callback = on_state_change
+sdk.on_result_callback = on_result
+sdk.on_vision_callback = on_vision
+sdk.robot.register_listen_callback(domain, listen_callback)
+sdk.robot.set_expression(RobotFace.HIDEFACE, timeout=5)
+
 try:
     while True:
-        run()
+        RawData=input('1')
+        run(RawData)
+
 finally:
     sdk.robot.stop_speak_and_listen()
     sdk.vision.cancel_detect_face()
