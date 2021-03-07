@@ -3,7 +3,7 @@ import time
 from functools import partial
 context = zmq.Context()
 recvive = context.socket(zmq.PULL)
-recvive.connect("tcp://192.168.0.106:5554")
+recvive.connect("tcp://172.20.94.42:5554")
 
 sender = context.socket(zmq.PUSH)
 sender.connect("tcp://192.168.0.106:5556")
