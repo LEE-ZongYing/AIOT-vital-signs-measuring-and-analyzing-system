@@ -9,7 +9,7 @@ import time
 zenbo_speakSpeed = 80
 zenbo_speakPitch = 100
 zenbo_speakLanguage = 150
-host = '192.168.0.5'
+host = '192.168.43.50'
 sdk = pyzenbo.connect(host)
 domain = 'E7AABB554ACB414C9AB9BF45E7FA8AD9'
 timeout = 30
@@ -131,14 +131,18 @@ class Switcher(object):#state switcher
         self.ATN=int(ATN)
         self.MeasureValue=MeasureValue
         self.unit=unit
-    def number_0(self):#初始狀態，無限開啟人臉辨識就打招呼
+    def number_0(self,obj1):#初始狀態，無限開啟人臉辨識就打招呼
         if event_vision.isSet():
             event_vision.clear()
-        result = sdk.vision.request_detect_face(enable_debug_preview=True, timeout=15)
-        print(result)
+        if obj1.CheckCardInput(obj1):#怪怪的,呼叫自己的function也把自己傳過去，我想想行不行
+
+        print('開啟相機')
+        result = sdk.vision.request_detect_face(enable_debug_preview=True, timeout=5)
+        print('結束相機')
         is_detect_face = event_vision.wait(timeout)
         sdk.vision.cancel_detect_face()
         print(is_detect_face)
+        
         if is_detect_face:
             sdk.robot.set_expression(RobotFace.DEFAULT,'您好，我是您的健康監控小幫手Zenbo，對健康有疑問都能夠來找我喔',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
         else:
@@ -264,9 +268,18 @@ class Switcher(object):#state switcher
         else:
             recommandation[self.ATN]='恭喜您目前體溫還在正常範圍內'
         return
+    def CheckCardInput(self,IsObj1):
+        try:
+            string = socket.recv(flags=zmq.NOBLOCK)
+            if string[0:2]=='08':
+                print('Ready go to face recognition but CardInput happen.')
+                
+                return True
+        except zmq.Again as e:
+            return False
 class number_0(object):
     def exec(self,obj1):
-        obj1.number_0()
+        obj1.number_0(obj1)
         return
     def exit(self):
         pass
@@ -317,8 +330,11 @@ class number_15(object):
         return
     def exit(self):
         pass
+
+
 def run(RawData):
     #socket.recv().decode('utf-8')
+    RawData=input('輸入 : ')
     Case=Switcher((lambda x:x[0:2])(RawData),(lambda x:x[2:len(x)-2])(RawData),(lambda x:x[len(x)-2:len(x)])(RawData))#改成用,分隔數值會比較好找
     fsm=Case.state[Case.ATN]
     fsm.exec(Case)
@@ -345,3 +361,5 @@ finally:
     sdk.release()
 
 
+#切入人臉有其他數值
+#1. 秒數很低的時候,會一直逛callback function

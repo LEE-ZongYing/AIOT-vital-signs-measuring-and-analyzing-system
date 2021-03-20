@@ -4,7 +4,7 @@ import pyzenbo
 from pyzenbo.modules.dialog_system import RobotFace
 from pyzenbo.modules.error_code import code_to_description
 
-host = '192.168.0.186'
+host = '192.168.43.50'
 sdk = pyzenbo.connect(host)
 domain = 'E7AABB554ACB414C9AB9BF45E7FA8AD9'
 timeout = 15
