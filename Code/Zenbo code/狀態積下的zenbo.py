@@ -104,7 +104,7 @@ def listen_callback(args):
     return
 def say_hello_and_ask(self):
     print('say_hello_and_ask')
-    sdk.robot.set_expression(RobotFace.HAPPY, timeout=5)
+    sdk.robot.set_expression(RobotFace.HAPPY, timeout=2)
     sdk.robot.jump_to_plan(domain, 'lanuchHelloWolrd_Plan')
     SirOrMama=['先生','女士']
     flag=1 if self.unit=='MM' else 0#server幫我篩選過，故比較沒那些難寫   
@@ -134,10 +134,9 @@ class Switcher(object):#state switcher
     def number_0(self,obj1):#初始狀態，無限開啟人臉辨識就打招呼
         if event_vision.isSet():
             event_vision.clear()
-        if obj1.CheckCardInput(obj1):#怪怪的,呼叫自己的function也把自己傳過去，我想想行不行
-
+        #if obj1.CheckCardInput(obj1):#怪怪的,呼叫自己的function也把自己傳過去，我想想行不行
         print('開啟相機')
-        result = sdk.vision.request_detect_face(enable_debug_preview=True, timeout=5)
+        result = sdk.vision.request_detect_face(enable_debug_preview=True,timeout=None)
         print('結束相機')
         is_detect_face = event_vision.wait(timeout)
         sdk.vision.cancel_detect_face()
@@ -268,15 +267,15 @@ class Switcher(object):#state switcher
         else:
             recommandation[self.ATN]='恭喜您目前體溫還在正常範圍內'
         return
-    def CheckCardInput(self,IsObj1):
-        try:
-            string = socket.recv(flags=zmq.NOBLOCK)
-            if string[0:2]=='08':
-                print('Ready go to face recognition but CardInput happen.')
+    # def CheckCardInput(self,IsObj1):
+    #     try:
+    #         string = socket.recv(flags=zmq.NOBLOCK)
+    #         if string[0:2]=='08':
+    #             print('Ready go to face recognition but CardInput happen.')
                 
-                return True
-        except zmq.Again as e:
-            return False
+    #             return True
+    #     except zmq.Again as e:
+    #         return False
 class number_0(object):
     def exec(self,obj1):
         obj1.number_0(obj1)
