@@ -7,9 +7,9 @@ import time
 
 # setting 
 zenbo_speakSpeed = 80
-zenbo_speakPitch = 100
+zenbo_speakPitch = 110
 zenbo_speakLanguage = 150
-host = '192.168.43.50'
+host = '192.168.43.239'
 sdk = pyzenbo.connect(host)
 domain = 'E7AABB554ACB414C9AB9BF45E7FA8AD9'
 timeout = 30
@@ -17,11 +17,11 @@ timeout = 30
 greeting={}
 recommandation={}#0:'請問是要量測數據還是想查看網頁呢'
 #connection with server
-# context=zmq.Context()
-# socket=context.socket(zmq.PULL)
-# socket.bind("tcp://192.168.0.3:5556")
-# pusher = context.socket(zmq.PUSH)
-# pusher.bind("tcp://192.168.0.3:5557")
+context=zmq.Context()
+socket=context.socket(zmq.PULL)
+socket.bind("tcp://192.168.43.126:5554")
+pusher = context.socket(zmq.PUSH)
+pusher.bind("tcp://192.168.43.126:5558")
 
 
 
@@ -72,7 +72,7 @@ def listen_callback(args):
         def job():
             sdk.robot.set_expression(RobotFace.HAPPY)
             sdk.robot.set_expression(RobotFace.DEFAULT,'這是您的QRCode', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} , sync = True)
-            sdk.media.play_media('', 'IMG_20201025_193919.jpg', sync=True,timeout=timeout)#
+            sdk.media.play_media('', 'IMG_20210327_170602.jpg', sync=True,timeout=timeout)#
             time.sleep(5)
             return
         t = threading.Thread(target=job)
@@ -84,7 +84,7 @@ def listen_callback(args):
         def job():
             sdk.robot.set_expression(RobotFace.HAPPY)
             sdk.robot.set_expression(RobotFace.DEFAULT,'這是您的QRCode', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} , sync = True)
-            sdk.media.play_media('','IMG_20201025_193919.jpg', sync=True,timeout=timeout)#
+            sdk.media.play_media('','IMG_20210327_170602.jpg',timeout=timeout)#
             time.sleep(5)
         t = threading.Thread(target=job)
         t.start()
@@ -94,8 +94,8 @@ def listen_callback(args):
         print(slu)
         def job():
             sdk.robot.set_expression(RobotFace.HAPPY)
-            sdk.robot.set_expression(RobotFace.DEFAULT,'這是您的QRCode', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} , sync = True)
-            zenbo.media.play_media('', 'IMG_20201025_193919.jpg', sync=True,timeout=timeout)
+            sdk.robot.set_expression(RobotFace.DEFAULT,'這是您的QRCode', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} )
+            zenbo.media.play_media('', 'IMG_20210327_170602.jpg',timeout=timeout)
             time.sleep(5)#
         t = threading.Thread(target=job)
         t.start()
@@ -106,7 +106,7 @@ def say_hello_and_ask(self):
     print('say_hello_and_ask')
     sdk.robot.set_expression(RobotFace.HAPPY, timeout=2)
     sdk.robot.jump_to_plan(domain, 'lanuchHelloWolrd_Plan')
-    SirOrMama=['先生','女士']
+    SirOrMama=['女士','先生']
     flag=1 if self.unit=='MM' else 0#server幫我篩選過，故比較沒那些難寫   
     sdk.robot.speak_and_listen(self.MeasureValue+SirOrMama[flag]+'你好,我是 Zenbo Junior，請問您想量測指標或是查看歷史資料呢?',timeout=5)
     #需要量測身體狀況，請插入健保卡以便搜尋您的歷史資料哦
@@ -136,20 +136,18 @@ class Switcher(object):#state switcher
             event_vision.clear()
         #if obj1.CheckCardInput(obj1):#怪怪的,呼叫自己的function也把自己傳過去，我想想行不行
         print('開啟相機')
+        pusher.send_string("yes")
         result = sdk.vision.request_detect_face(enable_debug_preview=True,timeout=None)
         print('結束相機')
-        is_detect_face = event_vision.wait(timeout)
+        is_detect_face = event_vision.wait(timeout=10)
         sdk.vision.cancel_detect_face()
         print(is_detect_face)
-        
         if is_detect_face:
             sdk.robot.set_expression(RobotFace.DEFAULT,'您好，我是您的健康監控小幫手Zenbo，對健康有疑問都能夠來找我喔',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
         else:
             print('沒有人臉')
             sdk.robot.set_expression(RobotFace.DEFAULT,'hello,我是互動機器人Zenbo，能夠與您交朋友並提供關於健康知識哦',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
-
             #被直接詢問專業知識
-#     pusher.send_string("yes")
         return
     def number_8(self):#onlyCard
         say_hello_and_ask(self)#->問候後會自己聽
@@ -236,15 +234,25 @@ class Switcher(object):#state switcher
     #   pusher.send_string("yes")
         return
     def number_15(self):
-        greeting[self.ATN]='生理指標量測完畢'
-        recommandation[self.ATN]='這邊是您此次量測數值的紀錄，想查看歷史量測資料皆可以以手機掃描下方QRcode，by the way 每次AI分析數據、結果也會一併放置在網頁上'
-        zenbo.media.play_media('', 'IMG_20201025_193919.jpg', sync=True,timeout=100)#
-#      pusher.send_string("yes")
+        Device=['血壓計','體重計',額溫槍]
+        if self.unit=='kg':
+            flag=1
+        elif self.unit=='hg':
+            flag=0
+        else:
+            flag=2
+        greeting[self.ATN]='以偵測到'+Device[flag]+'訊號'
+        recommandation[self.ATN]='數值為:'+str(self.MeasureValue)+self.unit
+        recommandation[self.ATN]+='恭喜您全部量測完畢瞜，請拔除健保卡以利ZenboJunior產生QRcode讓您使用'#此處設定不給建議，建議給網頁上
+        sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN]+recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
+        print(greeting[self.ATN])
         return
-        #秀出網頁+QRcode
-        #Zenbo : 。
-    #def WeightSignal(self,Weight):
-        
+    def number_99(self):
+        greeting[self.ATN]='想查看歷史量測資料皆可以以手機掃描下方QRcode，此外每次的AI分析結果及建議也一併放置在網頁上。'
+        recommandation[self.ATN]='感謝您此次的使用，歡迎再次光臨謝謝^^'
+        sdk.media.play_media('', 'IMG_20210327_170602.jpg',timeout=10)#
+        sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN]+recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
+        return
     def BloodPressure(self,SystolicPressure,DiastolicPressure,Beats):
         SPH=True if int(SystolicPressure)>140 else False
         DPH=True if int(DiastolicPressure)>90 else False
@@ -329,11 +337,13 @@ class number_15(object):
         return
     def exit(self):
         pass
-
-
-def run(RawData):
-    #socket.recv().decode('utf-8')
-    RawData=input('輸入 : ')
+class number_99(object):
+    def exec(self,obj1):
+        obj1.number_99()
+        return
+    def exit(self):
+        pass
+def run(RawData):#99nc
     Case=Switcher((lambda x:x[0:2])(RawData),(lambda x:x[2:len(x)-2])(RawData),(lambda x:x[len(x)-2:len(x)])(RawData))#改成用,分隔數值會比較好找
     fsm=Case.state[Case.ATN]
     fsm.exec(Case)
@@ -351,14 +361,10 @@ sdk.robot.set_expression(RobotFace.HIDEFACE, timeout=5)
 
 try:
     while True:
-        RawData=input('1')
+        RawData=socket.recv().decode('utf-8')
         run(RawData)
 
 finally:
     sdk.robot.stop_speak_and_listen()
     sdk.vision.cancel_detect_face()
     sdk.release()
-
-
-#切入人臉有其他數值
-#1. 秒數很低的時候,會一直逛callback function
