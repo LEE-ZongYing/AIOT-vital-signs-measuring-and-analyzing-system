@@ -10,10 +10,10 @@ send_rasp = context.socket(zmq.PUSH)
 send_rasp.connect("tcp://192.168.43.61:5555")
 
 sender = context.socket(zmq.PUSH)
-sender.connect("tcp://192.168.43.127:5554")
+sender.connect("tcp://192.168.43.228:5554")
 
 zenbo_recvive = context.socket(zmq.PULL)
-zenbo_recvive.connect("tcp://192.168.43.127:5558")
+zenbo_recvive.connect("tcp://192.168.43.228:5558")
 
 send_inter = context.socket(zmq.PUSH)
 send_inter.connect("tcp://192.168.0.105:5557")

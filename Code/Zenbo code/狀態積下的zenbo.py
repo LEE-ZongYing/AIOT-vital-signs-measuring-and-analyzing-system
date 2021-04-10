@@ -9,7 +9,7 @@ import time
 zenbo_speakSpeed = 80
 zenbo_speakPitch = 110
 zenbo_speakLanguage = 150
-host = '192.168.43.239'
+host = '192.168.43.240'
 sdk = pyzenbo.connect(host)
 domain = 'E7AABB554ACB414C9AB9BF45E7FA8AD9'
 timeout = 30
@@ -19,9 +19,9 @@ recommandation={}#0:'請問是要量測數據還是想查看網頁呢'
 #connection with server
 context=zmq.Context()
 socket=context.socket(zmq.PULL)
-socket.bind("tcp://192.168.43.126:5554")
+socket.bind("tcp://192.168.43.228:5554")
 pusher = context.socket(zmq.PUSH)
-pusher.bind("tcp://192.168.43.126:5558")
+pusher.bind("tcp://192.168.43.228:5558")
 
 
 
@@ -72,7 +72,7 @@ def listen_callback(args):
         def job():
             sdk.robot.set_expression(RobotFace.HAPPY)
             sdk.robot.set_expression(RobotFace.DEFAULT,'這是您的QRCode', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} , sync = True)
-            sdk.media.play_media('', 'IMG_20210327_170602.jpg', sync=True,timeout=timeout)#
+            sdk.media.play_media('','IMG_20201025_193919.jpg',sync=True,timeout=None)#
             time.sleep(5)
             return
         t = threading.Thread(target=job)
@@ -84,18 +84,18 @@ def listen_callback(args):
         def job():
             sdk.robot.set_expression(RobotFace.HAPPY)
             sdk.robot.set_expression(RobotFace.DEFAULT,'這是您的QRCode', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} , sync = True)
-            sdk.media.play_media('','IMG_20210327_170602.jpg',timeout=timeout)#
+            sdk.media.play_media('','IMG_20201025_193919.jpg', sync=True,timeout=None)#
             time.sleep(5)
         t = threading.Thread(target=job)
         t.start()
         t.join()
         return
-    elif slu and '歷史資料'==str(slu.get('app_semantic').get('originalSentence')) :
+    elif slu and '需要'==str(slu.get('app_semantic').get('originalSentence')) :
         print(slu)
         def job():
             sdk.robot.set_expression(RobotFace.HAPPY)
             sdk.robot.set_expression(RobotFace.DEFAULT,'這是您的QRCode', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} )
-            sdk.media.play_media('', 'IMG_20210327_165646.jpg',timeout=timeout)
+            sdk.media.play_media('','IMG_20201025_193919.jpg',sync=True,timeout=None)
             time.sleep(5)#
         t = threading.Thread(target=job)
         t.start()
@@ -127,7 +127,7 @@ def not_found():
 
 class Switcher(object):#state switcher 
     def __init__(self,ATN,MeasureValue,unit):
-        self.state={0:number_0(),8:number_8(),9:number_9(),10:number_10(),11:number_11(),12:number_12(),13:number_13(),14:number_14(),15:number_15()}
+        self.state={0:number_0(),8:number_8(),9:number_9(),10:number_10(),11:number_11(),12:number_12(),13:number_13(),14:number_14(),15:number_15(),99:number_99()}
         self.ATN=int(ATN)
         self.MeasureValue=MeasureValue
         self.unit=unit
@@ -250,8 +250,8 @@ class Switcher(object):#state switcher
     def number_99(self):
         greeting[self.ATN]='想查看歷史量測資料皆可以以手機掃描下方QRcode'
         #，此外每次的AI分析結果及建議也一併放置在網頁上 recommandation[self.ATN]='感謝您此次的使用，歡迎再次光臨謝謝^^'
-        sdk.media.play_media('', 'IMG_20210327_165646.jpg',timeout=10)#
-        sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN]+recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
+        sdk.media.play_media('', 'IMG_20210327_165646.jpg',sync=True,timeout=timeout)#
+        sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
         return
     def BloodPressure(self,SystolicPressure,DiastolicPressure,Beats):
         SPH=True if int(SystolicPressure)>140 else False
