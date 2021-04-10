@@ -9,7 +9,7 @@ import time
 zenbo_speakSpeed = 80
 zenbo_speakPitch = 110
 zenbo_speakLanguage = 150
-host = '192.168.43.239'
+host = '192.168.43.240'
 sdk = pyzenbo.connect(host)
 domain = 'E7AABB554ACB414C9AB9BF45E7FA8AD9'
 timeout = 30
@@ -19,9 +19,9 @@ recommandation={}#0:'請問是要量測數據還是想查看網頁呢'
 #connection with server
 context=zmq.Context()
 socket=context.socket(zmq.PULL)
-socket.bind("tcp://192.168.43.126:5554")
+socket.bind("tcp://192.168.43.127:5554")
 pusher = context.socket(zmq.PUSH)
-pusher.bind("tcp://192.168.43.126:5558")
+pusher.bind("tcp://192.168.43.127:5558")
 
 
 
@@ -95,7 +95,7 @@ def listen_callback(args):
         def job():
             sdk.robot.set_expression(RobotFace.HAPPY)
             sdk.robot.set_expression(RobotFace.DEFAULT,'這是您的QRCode', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} )
-            zenbo.media.play_media('', 'IMG_20210327_170602.jpg',timeout=timeout)
+            sdk.media.play_media('', 'IMG_20210327_170602.jpg',timeout=timeout)
             time.sleep(5)#
         t = threading.Thread(target=job)
         t.start()
@@ -127,7 +127,7 @@ def not_found():
 
 class Switcher(object):#state switcher 
     def __init__(self,ATN,MeasureValue,unit):
-        self.state={0:number_0(),8:number_8(),9:number_9(),10:number_10(),11:number_11(),12:number_12(),13:number_13(),14:number_14(),15:number_15()}
+        self.state={0:number_0(),8:number_8(),9:number_9(),10:number_10(),11:number_11(),12:number_12(),13:number_13(),14:number_14(),15:number_15(),99:number_99()}
         self.ATN=int(ATN)
         self.MeasureValue=MeasureValue
         self.unit=unit
@@ -181,7 +181,7 @@ class Switcher(object):#state switcher
         greeting[self.ATN]='以偵測到體重訊號，目前體重為'+str(self.MeasureValue)+'公斤'
         #recommandation[self.ATN]+='能提供Zenbo您的身高嗎? Zenbo能依照身高、體重來建議您如何維持健康哦'
         #如何讓user提供身高
-        recommandation[self.ATN]+='請繼續量測體溫、血壓，以便讓AI替您做健康分析唷'
+        recommandation[self.ATN]='請繼續量測體溫、血壓，以便讓AI替您做健康分析唷'
         sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN]+recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
         print(recommandation[self.ATN])
         return
@@ -234,7 +234,7 @@ class Switcher(object):#state switcher
     #   pusher.send_string("yes")
         return
     def number_15(self):
-        Device=['血壓計','體重計',額溫槍]
+        Device=['血壓計','體重計','額溫槍']
         if self.unit=='kg':
             flag=1
         elif self.unit=='hg':
@@ -250,7 +250,8 @@ class Switcher(object):#state switcher
     def number_99(self):
         greeting[self.ATN]='想查看歷史量測資料皆可以以手機掃描下方QRcode，此外每次的AI分析結果及建議也一併放置在網頁上。'
         recommandation[self.ATN]='感謝您此次的使用，歡迎再次光臨謝謝^^'
-        sdk.media.play_media('', 'IMG_20210327_170602.jpg',timeout=10)#
+        sdk.media.play_media('', 'IMG_20210327_170602.jpg',timeout=timeout)
+        time.sleep(10)
         sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN]+recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
         return
     def BloodPressure(self,SystolicPressure,DiastolicPressure,Beats):

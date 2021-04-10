@@ -4,16 +4,16 @@ import threading
 from functools import partial
 context = zmq.Context()
 recvive = context.socket(zmq.PULL)
-recvive.connect("tcp://192.168.0.12:5556")
+recvive.connect("tcp://192.168.43.61:5556")
 
 send_rasp = context.socket(zmq.PUSH)
-send_rasp.connect("tcp://192.168.0.12:5555")
+send_rasp.connect("tcp://192.168.43.61:5555")
 
 sender = context.socket(zmq.PUSH)
-sender.connect("tcp://192.168.43.126:5554")
+sender.connect("tcp://192.168.43.127:5554")
 
 zenbo_recvive = context.socket(zmq.PULL)
-zenbo_recvive.connect("tcp://192.168.43.126:5558")
+zenbo_recvive.connect("tcp://192.168.43.127:5558")
 
 send_inter = context.socket(zmq.PUSH)
 send_inter.connect("tcp://192.168.0.105:5557")
@@ -42,32 +42,29 @@ class MeasureEvent(object):
     def OnlyCard(self):
         self.data = "08" + self.data
         sender.send_string(self.data)
+        self.data = ""
         print("onlycard")
     def InitialState(self):
         sender.send_string("00nc")
         #人臉辨識
     #量其他工具
     def CTM(self):
-        self.data = "12" + self.data
-        sender.send_string(self.data)
+        sender.send_string(str(self.AttributeToNumber())+self.data)
     def CWM(self):
-        self.data = "10" + self.data
-        sender.send_string(self.data)
+        sender.send_string(str(self.AttributeToNumber())+self.data)
     def CPM(self):
-        self.data = "09" + self.data
-        sender.send_string(self.data)
+        sender.send_string(str(self.AttributeToNumber())+self.data)
     def CTPM(self):
-        self.data = "13" + self.data
-        sender.send_string(self.data)
+        sender.send_string(str(self.AttributeToNumber())+self.data)
     def CWPM(self):
-        self.data = "11" + self.data
-        sender.send_string(self.data)
+        sender.send_string(str(self.AttributeToNumber())+self.data)
     def CTWM(self):
-        self.data = "14" + self.data
-        sender.send_string(self.data)
+        sender.send_string(str(self.AttributeToNumber())+self.data)
     def OffCard(self):
         self.data = "99" + self.data
         sender.send_string(self.data)
+        self.data = ""
+        print("offcard")
     def AttributeToNumber(self):
         number=0
         if self.card==True:
@@ -78,12 +75,9 @@ class MeasureEvent(object):
             number+=2
         if self.pressure==True:
             number+=1
-        if self.offCard==True:
-            number+=99
         return number
     def FINISH(self):
-        self.data = "15" + self.data
-        sender.send_string(self.data)
+        sender.send_string(str(self.AttributeToNumber())+self.data)
 class State(object):#全0時初始狀態
     def exec(self,):
         pass
@@ -143,7 +137,7 @@ class OffCard(State):
 
 class StateMachine(object):
     def __init__(self):#對應數字:各式狀態
-        self.states={0:InitialState(),8:OnlyCard(),9:CPM(),10:CWM(),11:CWPM(),12:CTM(),13:CTPM(),14:CTWM(),15:FINISH(),99:OffCard()}
+        self.states={0:InitialState(),7:OffCard(),8:OnlyCard(),9:CPM(),10:CWM(),11:CWPM(),12:CTM(),13:CTPM(),14:CTWM(),15:FINISH()}
     def getFsm(self,state):#從此處拿狀態機
         return self.states[state]
     def changeState(self, l, obj1):
@@ -186,14 +180,17 @@ def run(l,sm):
             if p.pressure==False:
                 p.pressure=True
                 p.data=data
-        elif data=="finish":
-            if p.offCard==False:
-                p.offCard=True
+        elif data=="nc":
+            if p.card==True:
+                p.card=False
                 p.data=data
+        if l.AttributeToNumber()==6 or l.AttributeToNumber()==5 or l.AttributeToNumber()==4 or l.AttributeToNumber()==3 or l.AttributeToNumber()==2 or l.AttributeToNumber()==1 or l.AttributeToNumber()==0:
+            break
         l.bind(l.AttributeToNumber(),sm.getFsm(l.AttributeToNumber()))
         print(l.card)
         sm.changeState(l,PreviousState)
-        if l.AttributeToNumber()==15 or l.AttributeToNumber()==99:
+        if l.AttributeToNumber()==7:
+            time.sleep(10)
             break
         
     #measure.append(l)
