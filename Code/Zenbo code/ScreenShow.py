@@ -5,8 +5,14 @@ from pyzenbo.modules.dialog_system import RobotFace
 zenbo_speakSpeed = 100
 zenbo_speakPitch = 100
 zenbo_speakLanguage = 1
-zenbo = pyzenbo.connect('192.168.43.240')
-print("執行")
-zenbo.media.play_media('','IMG_20210327_165646.jpg')# 您需要將檔案放在裝置中指定的路徑 /sdcard/Zenbo實驗室/
-time.sleep(10)
-exit()
+zenbo = pyzenbo.connect('192.168.43.239')
+timeout=30
+
+def historical_record():
+    zenbo.robot.set_expression(RobotFace.DEFAULT,'這是您的QRCode', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
+    zenbo.media.play_media('', 'IMG_20201025_193919.jpg', sync=False)
+    time.sleep(5)
+    exit()
+historical_record()
+zenbo.media.stop_media()
+zenbo.release()
