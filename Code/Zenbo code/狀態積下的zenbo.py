@@ -9,7 +9,7 @@ import time
 zenbo_speakSpeed = 80
 zenbo_speakPitch = 110
 zenbo_speakLanguage = 150
-host = '192.168.43.240'
+host = '192.168.43.50'
 sdk = pyzenbo.connect(host)
 domain = 'E7AABB554ACB414C9AB9BF45E7FA8AD9'
 timeout = 30
@@ -19,9 +19,9 @@ recommandation={}#0:'請問是要量測數據還是想查看網頁呢'
 #connection with server
 context=zmq.Context()
 socket=context.socket(zmq.PULL)
-socket.bind("tcp://192.168.43.228:5554")
+socket.bind("tcp://192.168.43.126:5554")
 pusher = context.socket(zmq.PUSH)
-pusher.bind("tcp://192.168.43.228:5558")
+pusher.bind("tcp://192.168.43.126:5558")
 
 
 
@@ -44,63 +44,6 @@ def on_vision(*args):#Called when vision service sending result.
 
 def listen_callback(args):
     print('callbackS')
-    slu = args.get('event_slu_query', None)
-    if slu and '量測指標'==str(slu.get('app_semantic').get('originalSentence')) :
-        print(slu)
-        def job():
-            sdk.robot.set_expression(RobotFace.HAPPY)
-            sdk.robot.set_expression(RobotFace.DEFAULT,'好的，那請您前往量測儀器進行測量哦', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} , sync = True)
-        t = threading.Thread(target=job)
-        t.start()
-        if not event_listen.isSet():
-            event_listen.set()
-            #此時使用者會插入健保卡、State become CardOnly from initialState
-        return
-    if slu and '量測資料'==str(slu.get('app_semantic').get('originalSentence')) :
-        print(slu)
-        def job():
-            sdk.robot.set_expression(RobotFace.HAPPY)
-            sdk.robot.set_expression(RobotFace.DEFAULT,'好的，那請您前往量測儀器進行測量哦', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} , sync = True)
-        t = threading.Thread(target=job)
-        t.start()
-        if not event_listen.isSet():
-            event_listen.set()
-            #此時使用者會插入健保卡、State become CardOnly from initialState
-        return
-    elif slu and '查看資料'==str(slu.get('app_semantic').get('originalSentence')) :
-        print(slu)
-        def job():
-            sdk.robot.set_expression(RobotFace.HAPPY)
-            sdk.robot.set_expression(RobotFace.DEFAULT,'這是您的QRCode', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} , sync = True)
-            sdk.media.play_media('','IMG_20201025_193919.jpg',sync=True,timeout=None)#
-            time.sleep(5)
-            return
-        t = threading.Thread(target=job)
-        t.start()
-        t.join()
-        return
-    elif slu and '看歷史資料'==str(slu.get('app_semantic').get('originalSentence')) :
-        print(slu)
-        def job():
-            sdk.robot.set_expression(RobotFace.HAPPY)
-            sdk.robot.set_expression(RobotFace.DEFAULT,'這是您的QRCode', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} , sync = True)
-            sdk.media.play_media('','IMG_20201025_193919.jpg', sync=True,timeout=None)#
-            time.sleep(5)
-        t = threading.Thread(target=job)
-        t.start()
-        t.join()
-        return
-    elif slu and '需要'==str(slu.get('app_semantic').get('originalSentence')) :
-        print(slu)
-        def job():
-            sdk.robot.set_expression(RobotFace.HAPPY)
-            sdk.robot.set_expression(RobotFace.DEFAULT,'這是您的QRCode', {'speed':zenbo_speakSpeed, 'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage} )
-            sdk.media.play_media('','IMG_20201025_193919.jpg',sync=True,timeout=None)
-            time.sleep(5)#
-        t = threading.Thread(target=job)
-        t.start()
-        t.join()
-        return
     return
 def say_hello_and_ask(self):
     print('say_hello_and_ask')
@@ -108,10 +51,8 @@ def say_hello_and_ask(self):
     sdk.robot.jump_to_plan(domain, 'lanuchHelloWolrd_Plan')
     SirOrMama=['女士','先生']
     flag=1 if self.unit=='MM' else 0#server幫我篩選過，故比較沒那些難寫   
-    sdk.robot.speak_and_listen(self.MeasureValue+SirOrMama[flag]+'你好,我是 Zenbo Junior，請問您想量測指標或是查看歷史資料呢?',timeout=5)
+    sdk.robot.set_expression(RobotFace.DEFAULT,self.MeasureValue+SirOrMama[flag]+'量測系統已啟動，請開始量測體溫、體重或是血壓',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
     #需要量測身體狀況，請插入健保卡以便搜尋您的歷史資料哦
-
-
 def voice():
     print(counter)
     sdk.robot.set_expression(RobotFace.DEFAULT,greeting[counter],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
@@ -139,15 +80,11 @@ class Switcher(object):#state switcher
         pusher.send_string("yes")
         result = sdk.vision.request_detect_face(enable_debug_preview=True,timeout=None)
         print('結束相機')
-        is_detect_face = event_vision.wait(timeout=10)
+        is_detect_face = event_vision.wait(timeout=21)
         sdk.vision.cancel_detect_face()
         print(is_detect_face)
         if is_detect_face:
-            sdk.robot.set_expression(RobotFace.DEFAULT,'您好，我是您的健康監控小幫手Zenbo，對健康有疑問都能夠來找我喔',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
-        else:
-            print('沒有人臉')
-            sdk.robot.set_expression(RobotFace.DEFAULT,'hello,我是互動機器人Zenbo，能夠與您交朋友並提供關於健康知識哦',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
-            #被直接詢問專業知識
+            sdk.robot.set_expression(RobotFace.DEFAULT,'您好，我是您的健康指標量測小幫手Zenbo，對健康有疑問都能夠來找我喔',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
         return
     def number_8(self):#onlyCard
         say_hello_and_ask(self)#->問候後會自己聽
@@ -250,8 +187,9 @@ class Switcher(object):#state switcher
     def number_99(self):
         greeting[self.ATN]='想查看歷史量測資料皆可以以手機掃描下方QRcode'
         #，此外每次的AI分析結果及建議也一併放置在網頁上 recommandation[self.ATN]='感謝您此次的使用，歡迎再次光臨謝謝^^'
-        sdk.media.play_media('', 'IMG_20210327_165646.jpg',sync=True,timeout=timeout)#
+        sdk.media.play_media('', '_20210417_111530.jpg',sync=True,)#
         sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
+        time.sleep(20)
         return
     def BloodPressure(self,SystolicPressure,DiastolicPressure,Beats):
         SPH=True if int(SystolicPressure)>140 else False
