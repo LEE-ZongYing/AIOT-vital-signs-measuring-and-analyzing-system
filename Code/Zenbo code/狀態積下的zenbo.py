@@ -9,7 +9,7 @@ import time
 zenbo_speakSpeed = 80
 zenbo_speakPitch = 110
 zenbo_speakLanguage = 150
-host = '192.168.43.50'
+host = '192.168.0.103'
 sdk = pyzenbo.connect(host)
 domain = 'E7AABB554ACB414C9AB9BF45E7FA8AD9'
 timeout = 30
@@ -19,9 +19,9 @@ recommandation={}#0:'請問是要量測數據還是想查看網頁呢'
 #connection with server
 context=zmq.Context()
 socket=context.socket(zmq.PULL)
-socket.bind("tcp://192.168.43.126:5554")
+socket.bind("tcp://192.168.0.145:5554")
 pusher = context.socket(zmq.PUSH)
-pusher.bind("tcp://192.168.43.126:5558")
+pusher.bind("tcp://192.168.0.145:5558")
 
 
 
@@ -99,6 +99,7 @@ class Switcher(object):#state switcher
     def number_9(self):#Card+pressure
         MessureValueArray=self.MeasureValue.split(',')
         global recommandation
+        print(MessureValueArray[0]+'\n'+MessureValueArray[1]+'\n'+MessureValueArray[2])
         greeting[self.ATN]='以偵測到血壓訊號，目前收縮壓為'+MessureValueArray[0]+'mmhg、擴張壓為'+MessureValueArray[1]+'mmhg'+'而心跳每分鐘為'+MessureValueArray[2]+'下'
         self.BloodPressure(MessureValueArray[0],MessureValueArray[1],MessureValueArray[2])
         sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN]+recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
@@ -185,10 +186,11 @@ class Switcher(object):#state switcher
         print(greeting[self.ATN])
         return
     def number_99(self):
+        print(self.ATN)
         greeting[self.ATN]='想查看歷史量測資料皆可以以手機掃描下方QRcode'
         #，此外每次的AI分析結果及建議也一併放置在網頁上 recommandation[self.ATN]='感謝您此次的使用，歡迎再次光臨謝謝^^'
-        sdk.media.play_media('', '_20210417_111530.jpg',sync=True,)#
         sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
+        sdk.media.play_media('', '_20210417_1   11530.JPG',sync=True,)
         time.sleep(20)
         return
     def BloodPressure(self,SystolicPressure,DiastolicPressure,Beats):
@@ -203,7 +205,6 @@ class Switcher(object):#state switcher
             if DPH:
                 recommandation[self.ATN]='收縮血壓、擴張血壓數據偏高，勞煩您近期多注意自己的身體，若出現頭暈、噁心、嘔吐現象請馬上前往醫院進行檢查'
         #recommandation[self.ATN]+='請繼續量測體溫、體重以便讓Zenbo Junior繼續替您做更詳細的健康分析哦'
-        print(recommandation[self.ATN])
         return
     def ThermoSignal(self,BodyTemp):
         if float(BodyTemp)>38.0:
@@ -282,6 +283,7 @@ class number_99(object):
     def exit(self):
         pass
 def run(RawData):#99nc
+    print(RawData)
     Case=Switcher((lambda x:x[0:2])(RawData),(lambda x:x[2:len(x)-2])(RawData),(lambda x:x[len(x)-2:len(x)])(RawData))#改成用,分隔數值會比較好找
     fsm=Case.state[Case.ATN]
     fsm.exec(Case)

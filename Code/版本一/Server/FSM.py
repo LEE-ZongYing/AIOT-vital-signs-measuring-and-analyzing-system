@@ -4,16 +4,16 @@ import threading
 from functools import partial
 context = zmq.Context()
 recvive = context.socket(zmq.PULL)
-recvive.connect("tcp://192.168.43.61:5556")
+recvive.connect("tcp://192.168.0.173:5556")
 
 send_rasp = context.socket(zmq.PUSH)
-send_rasp.connect("tcp://192.168.43.61:5555")
+send_rasp.connect("tcp://192.168.0.173:5555")
 
 sender = context.socket(zmq.PUSH)
-sender.connect("tcp://192.168.43.126:5554")
+sender.connect("tcp://192.168.0.145:5554")
 
 zenbo_recvive = context.socket(zmq.PULL)
-zenbo_recvive.connect("tcp://192.168.43.126:5558")
+zenbo_recvive.connect("tcp://192.168.0.145:5558")
 
 # send_inter = context.socket(zmq.PUSH)
 # send_inter.connect("tcp://192.168.0.105:5557")
@@ -53,7 +53,7 @@ class MeasureEvent(object):
     def CWM(self):
         sender.send_string(str(self.AttributeToNumber())+self.data)
     def CPM(self):
-        sender.send_string(str(self.AttributeToNumber())+self.data)
+        sender.send_string("0"+str(self.AttributeToNumber())+self.data)
     def CTPM(self):
         sender.send_string(str(self.AttributeToNumber())+self.data)
     def CWPM(self):
@@ -65,6 +65,7 @@ class MeasureEvent(object):
         sender.send_string(self.data)
         self.data = ""
         print("offcard")
+        time.sleep(10)
     def AttributeToNumber(self):
         number=0
         if self.card==True:
