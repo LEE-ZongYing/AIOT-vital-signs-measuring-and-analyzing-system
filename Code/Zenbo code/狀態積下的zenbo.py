@@ -51,7 +51,7 @@ def say_hello_and_ask(self):
     sdk.robot.jump_to_plan(domain, 'lanuchHelloWolrd_Plan')
     SirOrMama=['女士','先生']
     flag=1 if self.unit=='MM' else 0#server幫我篩選過，故比較沒那些難寫   
-    sdk.robot.set_expression(RobotFace.DEFAULT,self.MeasureValue+SirOrMama[flag]+'量測系統已啟動，請開始量測體溫、體重或是血壓',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
+    sdk.robot.set_expression(RobotFace.DEFAULT,self.MeasureValue+SirOrMama[flag]+'目前量測系統已啟動，請開始量測健康指標',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
     #需要量測身體狀況，請插入健保卡以便搜尋您的歷史資料哦
 def voice():
     print(counter)

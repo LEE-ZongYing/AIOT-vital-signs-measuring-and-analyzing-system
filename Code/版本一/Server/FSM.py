@@ -211,7 +211,7 @@ while True:
     data1 = data1.decode('utf-8')
     print(data1)
     while True:
-        socks = dict(poller.poll(2000))
+        socks = dict(poller.poll(21000))
         if socks:
             if socks.get(recvive) == zmq.POLLIN:
                 data=recvive.recv()#少編碼
