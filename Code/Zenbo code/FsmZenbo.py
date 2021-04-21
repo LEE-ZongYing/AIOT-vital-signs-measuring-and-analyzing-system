@@ -181,7 +181,7 @@ class Switcher(object):#state switcher
             flag=2
         greeting[self.ATN]='以偵測到'+Device[flag]+'訊號'
         recommandation[self.ATN]='數值為:'+str(self.MeasureValue)+self.unit
-        recommandation[self.ATN]+='恭喜您全部量測完畢瞜，請拔除健保卡以利ZenboJunior產生QRcode讓您使用'#此處設定不給建議，建議給網頁上
+        recommandation[self.ATN]+='全部量測完畢瞜，請拔除健保卡以利Zenbo產生QRcode生成網頁'#此處設定不給建議，建議給網頁上
         sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN]+recommandation[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
         print(greeting[self.ATN])
         return
@@ -196,23 +196,26 @@ class Switcher(object):#state switcher
     def BloodPressure(self,SystolicPressure,DiastolicPressure,Beats):
         SPH=True if int(SystolicPressure)>140 else False
         DPH=True if int(DiastolicPressure)>90 else False
-        if SPH==False:
+        if SPH==False:#收縮
             if DPH:
-                recommandation[self.ATN]='目前舒張壓偏高喔，若有任何問題歡迎在量測一次，建議能左右手血壓各量測一次，分析結果會更為準確喔'
+                recommandation[self.ATN]='舒張血壓偏高、收縮血壓偏低，最近工作很勞累喔，請多多活動身體，讓自己喘口氣吧'#若有任何問題歡迎在量測一次，建議能左右手血壓各量測一次，分析結果會更為準確喔
             else:
-                recommandation[self.ATN]='恭喜你還非常的健康喔，保持目前的生活作息，能使你更有活力喔。'
+                recommandation[self.ATN]='恭喜你血壓沒有問題，請保持目前的生活作息，能使你更有活力喔。'
         else:
-            if DPH:
-                recommandation[self.ATN]='收縮血壓、擴張血壓數據偏高，勞煩您近期多注意自己的身體，若出現頭暈、噁心、嘔吐現象請馬上前往醫院進行檢查'
-        #recommandation[self.ATN]+='請繼續量測體溫、體重以便讓Zenbo Junior繼續替您做更詳細的健康分析哦'
+            if DPH:#舒張
+                recommandation[self.ATN]='收縮血壓、擴張血壓數據偏高，勞煩您近期多注意自己的身體'#，若出現頭暈、噁心、嘔吐現象請馬上前往醫院進行檢查
+            else:
+                recommandation[self.ATN]='舒張血壓偏高、收縮血壓偏高，請養成運動習慣，每次20到30分鐘，能幫您降低血壓喔'
         return
     def ThermoSignal(self,BodyTemp):
         if float(BodyTemp)>38.0:
             recommandation[self.ATN]='您的體溫過高瞜，為了您及Zenbo的健康請一同戴上口罩八，此外，若身體有任何不適請盡速前往醫院'
         elif float(BodyTemp)>=37.0:
                 recommandation[self.ATN]='體溫稍高，若有運動、跑跳皆為正常現象'
-        else:
-            recommandation[self.ATN]='恭喜您目前體溫還在正常範圍內'
+        elif float(BodyTemp)>=36.0:
+                recommandation[self.ATN]='體溫在正常範圍內，但請不要忘記戴口罩防範Covid Nineteen喔'
+        elif float(BodyTemp)<35.0:
+                recommandation[self.ATN]='體溫不太正常，請將額頭靠近額溫槍，Zenbo替您做健康分析喔'
         return
     # def CheckCardInput(self,IsObj1):
     #     try:
