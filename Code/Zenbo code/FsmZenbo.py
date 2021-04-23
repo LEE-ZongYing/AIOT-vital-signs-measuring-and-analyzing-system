@@ -84,7 +84,7 @@ class Switcher(object):#state switcher
         sdk.vision.cancel_detect_face()
         print(is_detect_face)
         if is_detect_face:
-            sdk.robot.set_expression(RobotFace.DEFAULT,'您好，我是您的健康指標量測小幫手Zenbo，對健康有疑問都能夠來找我喔',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
+            sdk.robot.set_expression(RobotFace.DEFAULT,'您好，我是Zenbo JR，對健康有疑問都能夠來找我喔',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
         return
     def number_8(self):#onlyCard
         say_hello_and_ask(self)#->問候後會自己聽
@@ -203,7 +203,7 @@ class Switcher(object):#state switcher
                 recommandation[self.ATN]='恭喜你血壓沒有問題，請保持目前的生活作息，能使你更有活力喔。'
         else:
             if DPH:#舒張
-                recommandation[self.ATN]='收縮血壓、擴張血壓數據偏高，勞煩您近期多注意自己的身體'#，若出現頭暈、噁心、嘔吐現象請馬上前往醫院進行檢查
+                recommandation[self.ATN]='收縮血壓、擴張血壓數據偏高，勞煩您近期多注意自己的身體，有需要能前往醫院進行更精密的檢查'#，若出現頭暈、噁心、嘔吐現象請馬上前往醫院進行檢查
             else:
                 recommandation[self.ATN]='舒張血壓偏高、收縮血壓偏高，請養成運動習慣，每次20到30分鐘，能幫您降低血壓喔'
         return
@@ -215,7 +215,7 @@ class Switcher(object):#state switcher
         elif float(BodyTemp)>=36.0:
                 recommandation[self.ATN]='體溫在正常範圍內，但請不要忘記戴口罩防範Covid Nineteen喔'
         elif float(BodyTemp)<35.0:
-                recommandation[self.ATN]='體溫不太正常，請將額頭靠近額溫槍，Zenbo替您做健康分析喔'
+                recommandation[self.ATN]='體溫不太正常，請將額頭靠近額溫槍，Zenbo才能幫您作分析喔'
         return
     # def CheckCardInput(self,IsObj1):
     #     try:
@@ -285,7 +285,7 @@ class number_99(object):
         return
     def exit(self):
         pass
-def run(RawData):#99nc
+def run(RawData):
     print(RawData)
     Case=Switcher((lambda x:x[0:2])(RawData),(lambda x:x[2:len(x)-2])(RawData),(lambda x:x[len(x)-2:len(x)])(RawData))#改成用,分隔數值會比較好找
     fsm=Case.state[Case.ATN]
