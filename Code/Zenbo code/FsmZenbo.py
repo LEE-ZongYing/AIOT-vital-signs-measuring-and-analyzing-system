@@ -84,7 +84,7 @@ class Switcher(object):#state switcher
         sdk.vision.cancel_detect_face()
         print(is_detect_face)
         if is_detect_face:
-            sdk.robot.set_expression(RobotFace.DEFAULT,'您好，我是Zenbo JR，對健康有疑問都能夠來找我喔',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
+            sdk.robot.set_expression(RobotFace.DEFAULT,'您好，我是Zenbo Jr，能給予您一些關於健康上的建議哦，若需要能插入健保卡至讀卡機',{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
         return
     def number_8(self):#onlyCard
         say_hello_and_ask(self)#->問候後會自己聽
