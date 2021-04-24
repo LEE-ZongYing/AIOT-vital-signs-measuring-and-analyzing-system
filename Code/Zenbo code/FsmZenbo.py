@@ -2,6 +2,7 @@ import threading
 import pyzenbo
 from pyzenbo.modules.dialog_system import RobotFace
 from pyzenbo.modules.error_code import code_to_description
+from selenium import webdriver
 import zmq
 import time
 
@@ -187,10 +188,12 @@ class Switcher(object):#state switcher
         return
     def number_99(self):
         print(self.ATN)
-        greeting[self.ATN]='想查看歷史量測資料皆可以以手機掃描下方QRcode'
+        greeting[self.ATN]='想查看歷史量測資料皆可以以手機掃描網頁螢幕上的QRcode'
         #，此外每次的AI分析結果及建議也一併放置在網頁上 recommandation[self.ATN]='感謝您此次的使用，歡迎再次光臨謝謝^^'
         sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
-        sdk.media.play_media('', '_20210417_1   11530.JPG',sync=True,)
+        chromedriver=r'C:\Users\User\Desktop\Designing-implementing-and-testing-an-IoT-based-vital-signs-monitoring-system-for-elderly-health-ca\Code\Zenbo code\selenium\chromedriver.exe'
+        driver=webdriver.Chrome(chromedriver)
+        driver.get('http://192.168.0.164:8000/qrcode')
         time.sleep(20)
         return
     def BloodPressure(self,SystolicPressure,DiastolicPressure,Beats):
