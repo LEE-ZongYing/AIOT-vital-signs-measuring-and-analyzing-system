@@ -20,9 +20,9 @@ recommandation={}#0:'請問是要量測數據還是想查看網頁呢'
 #connection with server
 context=zmq.Context()
 socket=context.socket(zmq.PULL)
-socket.bind("tcp://192.168.0.145:5554")
+socket.bind("tcp://192.168.0.197:5554")
 pusher = context.socket(zmq.PUSH)
-pusher.bind("tcp://192.168.0.145:5558")
+pusher.bind("tcp://192.168.0.197:5558")
 
 
 
@@ -35,6 +35,7 @@ def on_state_change(serial, cmd, error, state):#Called when command state change
 
 def on_result(**kwargs):# Called when a robot command sending result.
     print('on_result', kwargs)
+    
 
 
 def on_vision(*args):#Called when vision service sending result.
@@ -191,8 +192,8 @@ class Switcher(object):#state switcher
         greeting[self.ATN]='想查看歷史量測資料皆可以以手機掃描網頁螢幕上的QRcode'
         #，此外每次的AI分析結果及建議也一併放置在網頁上 recommandation[self.ATN]='感謝您此次的使用，歡迎再次光臨謝謝^^'
         sdk.robot.set_expression(RobotFace.DEFAULT,greeting[self.ATN],{'speed':zenbo_speakSpeed,'pitch':zenbo_speakPitch, 'languageId':zenbo_speakLanguage})
-        chromedriver=r'C:\Users\user\Documents\GitHub\project\Code\Zenbo code\selenium\chromedriver.exe'
-        driver=webdriver.Chrome(chromedriver)
+        Server=r'C:\Users\User\Desktop\Designing-implementing-and-testing-an-IoT-based-vital-signs-monitoring-system-for-elderly-health-ca\Code\Zenbo code\selenium\chromedriver.exe'
+        driver=webdriver.Chrome(Server)
         driver.get('http://192.168.0.164:8000/qrcode')
         time.sleep(20)
         return
@@ -203,7 +204,10 @@ class Switcher(object):#state switcher
             if DPH:
                 recommandation[self.ATN]='舒張血壓偏高、收縮血壓偏低，最近工作很勞累喔，請多多活動身體，讓自己喘口氣吧'#若有任何問題歡迎在量測一次，建議能左右手血壓各量測一次，分析結果會更為準確喔
             else:
-                recommandation[self.ATN]='恭喜你血壓沒有問題，請保持目前的生活作息，能使你更有活力喔。'
+                if(int(SystolicPressure)<90):
+                    recommandation[self.ATN]='血壓過低小心有休克的危機喔，請密切觀察盡早處理。'
+                else:
+                    recommandation[self.ATN]='恭喜你血壓沒有問題，請保持目前的生活作息，能使你更有活力喔。'
         else:
             if DPH:#舒張
                 recommandation[self.ATN]='收縮血壓、擴張血壓數據偏高，勞煩您近期多注意自己的身體，有需要能前往醫院進行更精密的檢查'#，若出現頭暈、噁心、嘔吐現象請馬上前往醫院進行檢查
@@ -218,7 +222,7 @@ class Switcher(object):#state switcher
         elif float(BodyTemp)>=36.0:
                 recommandation[self.ATN]='體溫在正常範圍內，但請不要忘記戴口罩防範Covid Nineteen喔'
         elif float(BodyTemp)<35.0:
-                recommandation[self.ATN]='體溫不太正常，請將額頭靠近額溫槍，Zenbo才能幫您作分析喔'
+                recommandation[self.ATN]='體溫不太正常，請將額頭靠近額溫槍'
         return
     # def CheckCardInput(self,IsObj1):
     #     try:
