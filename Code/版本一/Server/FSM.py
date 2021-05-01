@@ -18,7 +18,6 @@ zenbo_recvive.connect("tcp://192.168.0.197:5558")
 # send_inter = context.socket(zmq.PUSH)
 # send_inter.connect("tcp://192.168.0.105:5557")
 
-
 poller = zmq.Poller()
 poller.register(recvive, zmq.POLLIN)
 
@@ -33,6 +32,7 @@ class MeasureEvent(object):
         self.data=""
         self.done=False
         self.offCard=False
+
     def bind(self,state,fsm):#bind state
         print("bind start")
         self.state=state
@@ -172,19 +172,19 @@ def run(l,sm):
         if data[length-2:length]=='.C':
             if p.temperature==False:
                 p.temperature=True
-                p.data=data
+            p.data=data
         elif data[length-2:length]=='kg':
             if p.weight==False:
                 p.weight=True
-                p.data=data
+            p.data=data
         elif data[length-2:length]=='hg':
             if p.pressure==False:
                 p.pressure=True
-                p.data=data
+            p.data=data
         elif data=="nc":
             if p.card==True:
                 p.card=False
-                p.data=data
+            p.data=data
         if l.AttributeToNumber()==6 or l.AttributeToNumber()==5 or l.AttributeToNumber()==4 or l.AttributeToNumber()==3 or l.AttributeToNumber()==2 or l.AttributeToNumber()==1 or l.AttributeToNumber()==0:
             break
         l.bind(l.AttributeToNumber(),sm.getFsm(l.AttributeToNumber()))

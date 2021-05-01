@@ -204,7 +204,7 @@ class Switcher(object):#state switcher
             if DPH:
                 recommandation[self.ATN]='舒張血壓偏高、收縮血壓偏低，最近工作很勞累喔，請多多活動身體，讓自己喘口氣吧'#若有任何問題歡迎在量測一次，建議能左右手血壓各量測一次，分析結果會更為準確喔
             else:
-                if(int(SystolicPressure)<90):
+                if(int(SystolicPressure)<100):
                     recommandation[self.ATN]='血壓過低小心有休克的危機喔，請密切觀察盡早處理。'
                 else:
                     recommandation[self.ATN]='恭喜你血壓沒有問題，請保持目前的生活作息，能使你更有活力喔。'
