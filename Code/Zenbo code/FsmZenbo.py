@@ -201,18 +201,29 @@ class Switcher(object):#state switcher
         SPH=True if int(SystolicPressure)>140 else False
         DPH=True if int(DiastolicPressure)>90 else False
         if SPH==False:#收縮
-            if DPH:
-                recommandation[self.ATN]='舒張血壓偏高、收縮血壓偏低，最近工作很勞累喔，請多多活動身體，讓自己喘口氣吧'#若有任何問題歡迎在量測一次，建議能左右手血壓各量測一次，分析結果會更為準確喔
-            else:
+            if DPH:#checked
                 if(int(SystolicPressure)<100):
-                    recommandation[self.ATN]='血壓過低小心有休克的危機喔，請密切觀察盡早處理。'
+                    recommandation[self.ATN]='舒張壓偏高、收縮壓偏低，最近工作很勞累喔，請多多活動身體，讓自己喘口氣吧'#若有任何問題歡迎在量測一次，建議能左右手血壓各量測一次，分析結果會更為準確喔
                 else:
-                    recommandation[self.ATN]='恭喜你血壓沒有問題，請保持目前的生活作息，能使你更有活力喔。'
+                    recommandation[self.ATN]='舒張壓偏高、收縮壓正常，可能有高血壓疑慮，請在注意一下身體'
+            else:
+                if(int(SystolicPressure)<100)
+                    if(int(DiastolicPressure)<60)
+                        recommandation[self.ATN]='收縮、舒張壓過低小心有休克、低血壓的危機喔，請密切觀察盡早處理。'
+                    else:
+                        recommandation[self.ATN]='收縮壓偏低、舒張壓正常小心，請規律生活及運動。'
+                else:
+                    if(int(DiastolicPressure)<60)
+                        recommandation[self.ATN]='收縮壓正常、舒張壓過低，若有頭暈現象可能是低血壓前兆喔。'
+                    else:
+                        recommandation[self.ATN]='恭喜你血壓沒有問題，請保持目前的生活作息，能使你更有活力喔。'
         else:
             if DPH:#舒張
                 recommandation[self.ATN]='收縮血壓、擴張血壓數據偏高，勞煩您近期多注意自己的身體，有需要能前往醫院進行更精密的檢查'#，若出現頭暈、噁心、嘔吐現象請馬上前往醫院進行檢查
+            elif(int(DiastolicPressure)<60):
+                recommandation[self.ATN]='舒張血壓偏低、收縮血壓偏高，請養成運動習慣，每次20到30分鐘，能幫您降低血壓喔'
             else:
-                recommandation[self.ATN]='舒張血壓偏高、收縮血壓偏高，請養成運動習慣，每次20到30分鐘，能幫您降低血壓喔'
+                recommandation[self.ATN]='舒張血壓正常、收縮血壓偏高，少吃油炸、精緻食物能幫助您減低血管硬化的風險喔，'             
         return
     def ThermoSignal(self,BodyTemp):
         if float(BodyTemp)>38.0:
