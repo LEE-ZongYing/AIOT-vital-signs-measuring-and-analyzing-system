@@ -207,13 +207,13 @@ class Switcher(object):#state switcher
                 else:
                     recommandation[self.ATN]='舒張壓偏高、收縮壓正常，可能有高血壓疑慮，請在注意一下身體'
             else:
-                if(int(SystolicPressure)<100)
-                    if(int(DiastolicPressure)<60)
+                if(int(SystolicPressure)<100):
+                    if(int(DiastolicPressure)<60):
                         recommandation[self.ATN]='收縮、舒張壓過低小心有休克、低血壓的危機喔，請密切觀察盡早處理。'
                     else:
                         recommandation[self.ATN]='收縮壓偏低、舒張壓正常小心，請規律生活及運動。'
                 else:
-                    if(int(DiastolicPressure)<60)
+                    if(int(DiastolicPressure)<60):
                         recommandation[self.ATN]='收縮壓正常、舒張壓過低，若有頭暈現象可能是低血壓前兆喔。'
                     else:
                         recommandation[self.ATN]='恭喜你血壓沒有問題，請保持目前的生活作息，能使你更有活力喔。'
