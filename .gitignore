@@ -123,3 +123,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+*.mp4
+生活科技研討會/DLT影片素材/AIOT量測與分析系統_PresentationShtseng.pptx
