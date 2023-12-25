@@ -95,7 +95,9 @@ python test.py
   1. 建立專屬於Iccard資料庫
   2. 設定使用者密碼及權限
   3. 建立Iccard資料表儲存使用者各項資料
-
+## System Demo(系統展示)
+1. Demo 網址:https://youtu.be/vt5fpE0bzSY
+2. 系統實際執行從5:48開始
 ## 參考資料
 * [ZeroMQ](https://zeromq.org/download/)
 * [Bluez相關的各種tools的使用](https://b8807053.pixnet.net/blog/post/347831957-bluez%E7%9B%B8%E9%97%9C%E7%9A%84%E5%90%84%E7%A8%AEtools%E7%9A%84%E4%BD%BF%E7%94%A8)
