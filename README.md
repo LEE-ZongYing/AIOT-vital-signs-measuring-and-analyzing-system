@@ -1,5 +1,6 @@
-#高齡智慧生理監控系統
-
+#AIOT生理量測與分析系統
+指導教授:曾士桓 教授
+共同製作人:張政祈、葉韋均、關柏龍
 
 ## About this project (關於計畫)
 This project have the source file of vital signs monitoring system running on a Zenbo Junior robot made by ASUS Inc.
@@ -85,9 +86,9 @@ This project have the source file of vital signs monitoring system running on a 
 python test.py
 ```
 * Zenbo Junior
-  1. 執行project/Code/版本一/Zenbo/版本一流程Code.py，連接Zenbo Junior。
+  1. 執行project/Code/版本一/Zenbo/FsmZenbo.py，連接Zenbo Junior。
 * Server
-  1. 架設Server執行project/Code/版本一/Server/Server.py。
+  1. 架設Server執行project/Code/版本一/Server/FSM.py。
 * Raspberry Pi 3
   1. 在Raspberry Pi 3中執行project/Code/版本一/Raspberry/test.py，即可接收藍芽的數據。
 * Django
