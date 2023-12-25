@@ -1,6 +1,4 @@
 #AIOT生理量測與分析系統
-指導教授:曾士桓 教授
-共同製作人:張政祈、葉韋均、關柏龍
 
 ## About this project (關於計畫)
 This project have the source file of vital signs monitoring system running on a Zenbo Junior robot made by ASUS Inc.
